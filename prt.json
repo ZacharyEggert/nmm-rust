@@ -32,16 +32,16 @@
       "details": "Set up GitHub Actions to build/test on Windows, macOS, Linux.",
       "id": "P-002",
       "notes": "",
-      "passes-tests": false,
+      "passes-tests": true,
       "priority": "medium",
-      "status": "not-started",
+      "status": "completed",
       "tags": [
         "phase1",
         "month1"
       ],
       "title": "CI/CD: build+test matrix",
       "type": "planning",
-      "updatedAt": "2026-01-30T03:56:39.349Z"
+      "updatedAt": "2026-01-30T15:24:00.582Z"
     },
     {
       "blocks": [],
