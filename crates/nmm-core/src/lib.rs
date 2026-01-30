@@ -9,7 +9,7 @@
 //! # Example
 //!
 //! ```rust
-//! use nmm_core::{GameModeDescriptor, ModInfo};
+//! use nmm_core::{GameModeDescriptor, GameTheme};
 //!
 //! // Implement GameModeDescriptor for a new game
 //! struct MyGameDescriptor;
@@ -17,8 +17,17 @@
 //! impl GameModeDescriptor for MyGameDescriptor {
 //!     fn mode_id(&self) -> &str { "MyGame" }
 //!     fn name(&self) -> &str { "My Game" }
-//!     // ... other required methods
+//!     fn game_executables(&self) -> &[&str] { &["MyGame.exe"] }
+//!     fn plugin_extensions(&self) -> &[&str] { &[] }
+//!     fn critical_plugins(&self) -> &[&str] { &[] }
+//!     fn official_plugins(&self) -> &[&str] { &[] }
+//!     fn stop_folders(&self) -> &[&str] { &["Data"] }
+//!     fn theme(&self) -> GameTheme {
+//!         GameTheme { primary_color: "#4a90d9".into(), icon_path: None }
+//!     }
 //! }
+//!
+//! let _descriptor = MyGameDescriptor;
 //! ```
 
 mod error;

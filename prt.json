@@ -14,16 +14,16 @@
       "details": "Set up workspace members and shared [workspace.dependencies] per plan Month 1.",
       "id": "P-001",
       "notes": "",
-      "passes-tests": false,
+      "passes-tests": true,
       "priority": "medium",
-      "status": "not-started",
+      "status": "completed",
       "tags": [
         "phase1",
         "month1"
       ],
       "title": "Initialize Cargo workspace",
       "type": "planning",
-      "updatedAt": "2026-01-30T03:56:31.202Z"
+      "updatedAt": "2026-01-30T04:26:43.224Z"
     },
     {
       "blocks": [],
