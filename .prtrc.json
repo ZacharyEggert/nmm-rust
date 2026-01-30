@@ -1,0 +1,13 @@
+{
+  "$schema": "https://raw.githubusercontent.com/ZacharyEggert/project-roadmap-tracking/refs/heads/master/schemas/config/v1.1.json",
+  "cache": {
+    "enabled": true,
+    "maxSize": 10,
+    "watchFiles": true
+  },
+  "metadata": {
+    "description": "A project roadmap managed by Project Roadmap Tracking",
+    "name": "My Project Roadmap"
+  },
+  "path": "./prt.json"
+}

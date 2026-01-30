@@ -1,0 +1,2077 @@
+{
+  "$schema": "https://raw.githubusercontent.com/ZacharyEggert/project-roadmap-tracking/refs/heads/master/schemas/roadmap/v1.json",
+  "metadata": {
+    "createdAt": "2026-01-30T03:50:03.572Z",
+    "createdBy": "project-roadmap-tracking CLI",
+    "description": "A project roadmap managed by Project Roadmap Tracking",
+    "name": "My Project Roadmap"
+  },
+  "tasks": [
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:56:31.202Z",
+      "depends-on": [],
+      "details": "Set up workspace members and shared [workspace.dependencies] per plan Month 1.",
+      "id": "P-001",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase1",
+        "month1"
+      ],
+      "title": "Initialize Cargo workspace",
+      "type": "planning",
+      "updatedAt": "2026-01-30T03:56:31.202Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:56:39.349Z",
+      "depends-on": [],
+      "details": "Set up GitHub Actions to build/test on Windows, macOS, Linux.",
+      "id": "P-002",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase1",
+        "month1"
+      ],
+      "title": "CI/CD: build+test matrix",
+      "type": "planning",
+      "updatedAt": "2026-01-30T03:56:39.349Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:56:40.428Z",
+      "depends-on": [
+        "P-002"
+      ],
+      "details": "Add test coverage reporting in CI (choose tool + upload/report).",
+      "id": "P-003",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase1",
+        "month1"
+      ],
+      "title": "CI/CD: coverage reporting",
+      "type": "planning",
+      "updatedAt": "2026-01-30T03:56:56.193Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:56:41.452Z",
+      "depends-on": [
+        "P-002"
+      ],
+      "details": "Automate tagged release builds/artifacts via GitHub Actions.",
+      "id": "P-004",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase1",
+        "month1"
+      ],
+      "title": "CI/CD: release automation",
+      "type": "planning",
+      "updatedAt": "2026-01-30T03:56:56.931Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:56:42.627Z",
+      "depends-on": [
+        "P-001"
+      ],
+      "details": "Implement ModInfo metadata struct with serde Serialize/Deserialize + required fields + defaults.",
+      "id": "F-001",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase1",
+        "month1"
+      ],
+      "title": "nmm-core: ModInfo with serde support",
+      "type": "feature",
+      "updatedAt": "2026-01-30T03:56:57.672Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:56:43.802Z",
+      "depends-on": [
+        "P-001"
+      ],
+      "details": "Define core game mode traits in nmm-core (descriptor + runtime).",
+      "id": "F-002",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase1",
+        "month1"
+      ],
+      "title": "nmm-core: GameModeDescriptor + GameMode traits",
+      "type": "feature",
+      "updatedAt": "2026-01-30T03:56:58.413Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:56:44.948Z",
+      "depends-on": [
+        "P-001"
+      ],
+      "details": "Define ModFormat trait + FormatConfidence enum to model archive formats.",
+      "id": "F-003",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase1",
+        "month1"
+      ],
+      "title": "nmm-core: ModFormat trait + FormatConfidence",
+      "type": "feature",
+      "updatedAt": "2026-01-30T03:56:59.155Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:56:46.108Z",
+      "depends-on": [
+        "P-001"
+      ],
+      "details": "Create library error enums using thiserror; wire through core traits as needed.",
+      "id": "F-004",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase1",
+        "month1"
+      ],
+      "title": "nmm-core: error types (thiserror)",
+      "type": "feature",
+      "updatedAt": "2026-01-30T03:56:59.899Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:56:47.217Z",
+      "depends-on": [
+        "F-001",
+        "F-002",
+        "F-003",
+        "F-004"
+      ],
+      "details": "Set up integration test patterns (temp dirs, fixtures, cross-platform assumptions).",
+      "id": "P-005",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase1",
+        "month1"
+      ],
+      "title": "Integration test framework",
+      "type": "planning",
+      "updatedAt": "2026-01-30T03:57:00.641Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:57:07.094Z",
+      "depends-on": [
+        "P-001"
+      ],
+      "details": "Design schema for mods/file_owners/ini_edits tables + indices + migration strategy.",
+      "id": "P-006",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase1",
+        "month2"
+      ],
+      "title": "Install log: design SQLite schema",
+      "type": "planning",
+      "updatedAt": "2026-01-30T03:57:27.507Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:57:08.254Z",
+      "depends-on": [
+        "P-001"
+      ],
+      "details": "Define InstallLog trait API (mods, file ownership, ini edits, backup/transactions) in nmm-core.",
+      "id": "F-005",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase1",
+        "month2"
+      ],
+      "title": "nmm-core: InstallLog trait",
+      "type": "feature",
+      "updatedAt": "2026-01-30T03:57:28.250Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:57:09.175Z",
+      "depends-on": [
+        "P-006",
+        "F-005",
+        "P-001"
+      ],
+      "details": "Create nmm-install-log crate with rusqlite connection management and basic persistence.",
+      "id": "F-006",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase1",
+        "month2"
+      ],
+      "title": "nmm-install-log: crate skeleton + rusqlite",
+      "type": "feature",
+      "updatedAt": "2026-01-30T03:57:29.040Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:57:10.012Z",
+      "depends-on": [
+        "F-006"
+      ],
+      "details": "Implement mod registration + active mods list persisted in SQLite.",
+      "id": "F-007",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase1",
+        "month2"
+      ],
+      "title": "nmm-install-log: implement mods table",
+      "type": "feature",
+      "updatedAt": "2026-01-30T03:57:29.802Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:57:11.186Z",
+      "depends-on": [
+        "F-006",
+        "F-007"
+      ],
+      "details": "Implement file_owners stack/ordering semantics (current owner / previous owner / installers list).",
+      "id": "F-008",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase1",
+        "month2"
+      ],
+      "title": "nmm-install-log: file ownership tracking",
+      "type": "feature",
+      "updatedAt": "2026-01-30T03:57:30.499Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:57:12.334Z",
+      "depends-on": [
+        "F-006",
+        "F-007"
+      ],
+      "details": "Implement ini_edits ownership stack (current owner / previous value lookup).",
+      "id": "F-009",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase1",
+        "month2"
+      ],
+      "title": "nmm-install-log: INI edits tracking",
+      "type": "feature",
+      "updatedAt": "2026-01-30T03:57:31.196Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:57:13.520Z",
+      "depends-on": [
+        "F-006"
+      ],
+      "details": "Add transaction support (begin/commit/rollback) to match NMM install/uninstall semantics.",
+      "id": "F-010",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase1",
+        "month2"
+      ],
+      "title": "nmm-install-log: SQLite transactions",
+      "type": "feature",
+      "updatedAt": "2026-01-30T03:57:31.900Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:57:17.319Z",
+      "depends-on": [
+        "F-006",
+        "F-008",
+        "F-009"
+      ],
+      "details": "Implement InstallLog.xml importer to migrate existing C# NMM installs into SQLite.",
+      "id": "F-011",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase1",
+        "month2"
+      ],
+      "title": "Install log: XML import tool",
+      "type": "feature",
+      "updatedAt": "2026-01-30T03:57:32.628Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:57:18.062Z",
+      "depends-on": [
+        "F-008",
+        "F-009",
+        "F-010"
+      ],
+      "details": "Unit test file_owners + ini_edits stack behavior and transaction rollback cases.",
+      "id": "F-012",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase1",
+        "month2"
+      ],
+      "title": "Install log: unit tests for ownership",
+      "type": "feature",
+      "updatedAt": "2026-01-30T03:57:33.367Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:57:39.076Z",
+      "depends-on": [
+        "P-001"
+      ],
+      "details": "Implement create_link API and LinkType strategy with copy fallback; define VfsError.",
+      "id": "F-013",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase1",
+        "month3"
+      ],
+      "title": "nmm-vfs: link abstraction (symlink/hardlink/copy)",
+      "type": "feature",
+      "updatedAt": "2026-01-30T03:57:54.212Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:57:40.217Z",
+      "depends-on": [
+        "F-013"
+      ],
+      "details": "Implement Windows symlink creation + Developer Mode / privilege detection and fallback behavior.",
+      "id": "F-014",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase1",
+        "month3"
+      ],
+      "title": "nmm-vfs: Windows symlink handling",
+      "type": "feature",
+      "updatedAt": "2026-01-30T03:57:54.955Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:57:41.425Z",
+      "depends-on": [
+        "F-013"
+      ],
+      "details": "Implement macOS symlink behavior (Unix symlink) and verify directory/file cases.",
+      "id": "F-015",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase1",
+        "month3"
+      ],
+      "title": "nmm-vfs: macOS symlink handling",
+      "type": "feature",
+      "updatedAt": "2026-01-30T03:57:55.697Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:57:42.573Z",
+      "depends-on": [
+        "F-013"
+      ],
+      "details": "Support hardlink fallback constraints (same filesystem) and multi-drive scenarios.",
+      "id": "F-016",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase1",
+        "month3"
+      ],
+      "title": "nmm-vfs: multi-drive hardlink support",
+      "type": "feature",
+      "updatedAt": "2026-01-30T03:57:56.440Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:57:43.725Z",
+      "depends-on": [
+        "F-013"
+      ],
+      "details": "Implement conflict resolution: higher priority wins, deterministic ordering, link update strategy.",
+      "id": "F-017",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase1",
+        "month3"
+      ],
+      "title": "nmm-vfs: priority resolution algorithm",
+      "type": "feature",
+      "updatedAt": "2026-01-30T03:57:57.181Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:57:44.938Z",
+      "depends-on": [
+        "F-013"
+      ],
+      "details": "Parse and write VirtualModConfig.xml (versioned) to persist virtual install state.",
+      "id": "F-018",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase1",
+        "month3"
+      ],
+      "title": "nmm-vfs: VirtualModConfig.xml read/write",
+      "type": "feature",
+      "updatedAt": "2026-01-30T03:57:57.926Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:57:46.267Z",
+      "depends-on": [
+        "F-014",
+        "F-015",
+        "F-016",
+        "F-017",
+        "F-018"
+      ],
+      "details": "Integration tests using temp dirs: link strategies, conflict resolution, platform branches.",
+      "id": "F-019",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase1",
+        "month3"
+      ],
+      "title": "nmm-vfs: integration tests",
+      "type": "feature",
+      "updatedAt": "2026-01-30T03:57:58.673Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:58:04.468Z",
+      "depends-on": [
+        "F-002",
+        "P-001"
+      ],
+      "details": "Create nmm-game-modes crate and public APIs for game mode discovery/registration.",
+      "id": "F-020",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase2",
+        "month4"
+      ],
+      "title": "nmm-game-modes: crate skeleton",
+      "type": "feature",
+      "updatedAt": "2026-01-30T03:58:22.027Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:58:05.220Z",
+      "depends-on": [
+        "F-020",
+        "F-028"
+      ],
+      "details": "Implement Windows game install detection via registry keys (per game).",
+      "id": "F-021",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase2",
+        "month4"
+      ],
+      "title": "Game detection: Windows registry",
+      "type": "feature",
+      "updatedAt": "2026-01-30T03:58:23.520Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:58:06.068Z",
+      "depends-on": [
+        "F-020",
+        "F-028"
+      ],
+      "details": "Implement macOS game install detection via standard paths (Steam library, app bundles).",
+      "id": "F-022",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase2",
+        "month4"
+      ],
+      "title": "Game detection: macOS paths",
+      "type": "feature",
+      "updatedAt": "2026-01-30T03:58:24.263Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:58:07.139Z",
+      "depends-on": [
+        "F-020"
+      ],
+      "details": "Add registry of all supported game mode descriptors + selection by mode_id.",
+      "id": "F-023",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase2",
+        "month4"
+      ],
+      "title": "Game mode registry",
+      "type": "feature",
+      "updatedAt": "2026-01-30T03:58:25.006Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:58:08.193Z",
+      "depends-on": [
+        "F-020",
+        "P-001"
+      ],
+      "details": "Create nmm-games crate layout and module organization for per-game implementations.",
+      "id": "F-024",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase2",
+        "month4"
+      ],
+      "title": "nmm-games: crate structure",
+      "type": "feature",
+      "updatedAt": "2026-01-30T03:58:25.754Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:58:09.357Z",
+      "depends-on": [
+        "F-024",
+        "F-002"
+      ],
+      "details": "Implement INI file read/write helpers for Gamebryo-family games.",
+      "id": "F-025",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase2",
+        "month4"
+      ],
+      "title": "Gamebryo base: INI handling",
+      "type": "feature",
+      "updatedAt": "2026-01-30T03:58:26.498Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:58:10.501Z",
+      "depends-on": [
+        "F-024",
+        "F-002"
+      ],
+      "details": "Implement plugin directory resolution + writable paths for Gamebryo-family games.",
+      "id": "F-026",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase2",
+        "month4"
+      ],
+      "title": "Gamebryo base: plugin directory management",
+      "type": "feature",
+      "updatedAt": "2026-01-30T03:58:27.244Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:58:11.954Z",
+      "depends-on": [
+        "F-024",
+        "F-002",
+        "F-003"
+      ],
+      "details": "Implement mod-format adjusted paths (FOMod/OMod) for legacy compatibility.",
+      "id": "F-027",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase2",
+        "month4"
+      ],
+      "title": "Gamebryo base: legacy mod path adjustment",
+      "type": "feature",
+      "updatedAt": "2026-01-30T03:58:27.988Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:58:12.884Z",
+      "depends-on": [
+        "F-020"
+      ],
+      "details": "Detect Steam library folders cross-platform and expose helpers to game detection.",
+      "id": "F-028",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase2",
+        "month4"
+      ],
+      "title": "Steam library path detection",
+      "type": "feature",
+      "updatedAt": "2026-01-30T03:58:22.770Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:58:33.795Z",
+      "depends-on": [
+        "F-023",
+        "F-024",
+        "F-025",
+        "F-026",
+        "F-027",
+        "F-021",
+        "F-022"
+      ],
+      "details": "Implement Skyrim Special Edition GameModeDescriptor/GameMode + detection hooks.",
+      "id": "F-029",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase2",
+        "month5"
+      ],
+      "title": "Skyrim SE: game mode implementation",
+      "type": "feature",
+      "updatedAt": "2026-01-30T03:59:02.150Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:58:34.896Z",
+      "depends-on": [
+        "F-029"
+      ],
+      "details": "Implement .esp/.esm/.esl handling, plugins.txt + loadorder.txt read/write.",
+      "id": "F-030",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase2",
+        "month5"
+      ],
+      "title": "Skyrim SE: plugin management",
+      "type": "feature",
+      "updatedAt": "2026-01-30T03:59:02.560Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:58:35.952Z",
+      "depends-on": [
+        "F-029"
+      ],
+      "details": "Detect SKSE installation and expose status to UI/backend.",
+      "id": "F-031",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase2",
+        "month5"
+      ],
+      "title": "Skyrim SE: SKSE detection",
+      "type": "feature",
+      "updatedAt": "2026-01-30T03:59:03.310Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:58:37.039Z",
+      "depends-on": [
+        "F-023",
+        "F-024",
+        "F-025",
+        "F-026",
+        "F-027",
+        "F-021",
+        "F-022"
+      ],
+      "details": "Implement Fallout 4 GameModeDescriptor/GameMode + detection hooks.",
+      "id": "F-032",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase2",
+        "month5"
+      ],
+      "title": "Fallout 4: game mode implementation",
+      "type": "feature",
+      "updatedAt": "2026-01-30T03:59:04.053Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:58:38.172Z",
+      "depends-on": [
+        "F-032"
+      ],
+      "details": "Implement plugin list handling similar to Skyrim SE (plugins.txt/loadorder.txt).",
+      "id": "F-033",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase2",
+        "month5"
+      ],
+      "title": "Fallout 4: plugin management",
+      "type": "feature",
+      "updatedAt": "2026-01-30T03:59:04.809Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:58:39.298Z",
+      "depends-on": [
+        "F-032"
+      ],
+      "details": "Detect F4SE installation and expose status to UI/backend.",
+      "id": "F-034",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase2",
+        "month5"
+      ],
+      "title": "Fallout 4: F4SE detection",
+      "type": "feature",
+      "updatedAt": "2026-01-30T03:59:05.553Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:58:40.345Z",
+      "depends-on": [
+        "F-023",
+        "F-024",
+        "F-021",
+        "F-022"
+      ],
+      "details": "Implement Starfield GameModeDescriptor/GameMode + detection hooks.",
+      "id": "F-035",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase2",
+        "month5"
+      ],
+      "title": "Starfield: game mode implementation",
+      "type": "feature",
+      "updatedAt": "2026-01-30T03:59:05.965Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:58:41.386Z",
+      "depends-on": [
+        "F-035"
+      ],
+      "details": "Implement Starfield-specific plugin format and list file semantics.",
+      "id": "F-036",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase2",
+        "month5"
+      ],
+      "title": "Starfield: updated plugin format handling",
+      "type": "feature",
+      "updatedAt": "2026-01-30T03:59:06.729Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:58:42.440Z",
+      "depends-on": [
+        "F-035"
+      ],
+      "details": "Detect SFSE installation and expose status to UI/backend.",
+      "id": "F-037",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase2",
+        "month5"
+      ],
+      "title": "Starfield: SFSE detection",
+      "type": "feature",
+      "updatedAt": "2026-01-30T03:59:07.478Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:58:43.561Z",
+      "depends-on": [],
+      "details": "Investigate LOOT masterlist formats needed for basic auto-sorting.",
+      "id": "R-001",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase2",
+        "month5"
+      ],
+      "title": "LOOT: masterlist parsing research",
+      "type": "research",
+      "updatedAt": "2026-01-30T03:58:43.561Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:58:44.946Z",
+      "depends-on": [
+        "R-001",
+        "F-030",
+        "F-033",
+        "F-036"
+      ],
+      "details": "Implement basic plugin sorting using LOOT masterlist parsing results.",
+      "id": "F-038",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase2",
+        "month5"
+      ],
+      "title": "Plugin auto-sorting (basic)",
+      "type": "feature",
+      "updatedAt": "2026-01-30T03:59:08.219Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:59:14.838Z",
+      "depends-on": [
+        "P-001",
+        "F-001",
+        "F-003"
+      ],
+      "details": "Create nmm-archive crate and core archive abstraction (list/extract).",
+      "id": "F-039",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase3",
+        "month6"
+      ],
+      "title": "nmm-archive: crate skeleton",
+      "type": "feature",
+      "updatedAt": "2026-01-30T03:59:33.618Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:59:15.911Z",
+      "depends-on": [
+        "F-039"
+      ],
+      "details": "Implement zip archive listing + extraction.",
+      "id": "F-040",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase3",
+        "month6"
+      ],
+      "title": "Archive extraction: zip support",
+      "type": "feature",
+      "updatedAt": "2026-01-30T03:59:34.694Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:59:16.656Z",
+      "depends-on": [
+        "F-039"
+      ],
+      "details": "Implement 7z archive listing + extraction.",
+      "id": "F-041",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase3",
+        "month6"
+      ],
+      "title": "Archive extraction: 7z support",
+      "type": "feature",
+      "updatedAt": "2026-01-30T03:59:35.437Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:59:17.415Z",
+      "depends-on": [],
+      "details": "Determine approach for rar support (library choice, licensing, fallback behavior).",
+      "id": "R-002",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase3",
+        "month6"
+      ],
+      "title": "Archive extraction: rar support research",
+      "type": "research",
+      "updatedAt": "2026-01-30T03:59:17.416Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:59:18.434Z",
+      "depends-on": [
+        "F-039"
+      ],
+      "details": "Implement stop-folder based structure detection for archives.",
+      "id": "F-042",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase3",
+        "month6"
+      ],
+      "title": "Archive structure detection (stop folders)",
+      "type": "feature",
+      "updatedAt": "2026-01-30T03:59:36.186Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:59:19.545Z",
+      "depends-on": [
+        "F-042"
+      ],
+      "details": "Implement algorithm to identify mod root inside archive (using stop folders + heuristics).",
+      "id": "F-043",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase3",
+        "month6"
+      ],
+      "title": "Mod root detection algorithm",
+      "type": "feature",
+      "updatedAt": "2026-01-30T03:59:36.933Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:59:20.646Z",
+      "depends-on": [
+        "F-040",
+        "F-041"
+      ],
+      "details": "Implement parsing of FOMod metadata (info.xml).",
+      "id": "F-044",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase3",
+        "month6"
+      ],
+      "title": "FOMod: parse fomod/info.xml",
+      "type": "feature",
+      "updatedAt": "2026-01-30T03:59:37.679Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:59:21.746Z",
+      "depends-on": [
+        "F-044",
+        "F-040",
+        "F-041"
+      ],
+      "details": "Detect and classify fomod/ModuleConfig.xml for scripted installs.",
+      "id": "F-045",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase3",
+        "month6"
+      ],
+      "title": "FOMod: detect ModuleConfig.xml",
+      "type": "feature",
+      "updatedAt": "2026-01-30T03:59:38.428Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:59:22.835Z",
+      "depends-on": [
+        "F-039"
+      ],
+      "details": "Implement legacy OMod format detection and extraction.",
+      "id": "F-046",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase3",
+        "month6"
+      ],
+      "title": "OMod: legacy format support",
+      "type": "feature",
+      "updatedAt": "2026-01-30T03:59:38.849Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:59:43.862Z",
+      "depends-on": [
+        "P-001",
+        "F-001"
+      ],
+      "details": "Create nmm-scripting crate and public APIs for script parsing/execution.",
+      "id": "F-047",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase3",
+        "month7"
+      ],
+      "title": "nmm-scripting: crate skeleton",
+      "type": "feature",
+      "updatedAt": "2026-01-30T04:00:01.896Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:59:44.922Z",
+      "depends-on": [
+        "F-047"
+      ],
+      "details": "Parse XmlScript ModuleConfig.xml across supported versions.",
+      "id": "F-048",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase3",
+        "month7"
+      ],
+      "title": "XmlScript parser (v1-v5)",
+      "type": "feature",
+      "updatedAt": "2026-01-30T04:00:02.644Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:59:45.938Z",
+      "depends-on": [
+        "F-048"
+      ],
+      "details": "Implement condition evaluation engine used by XmlScript installers.",
+      "id": "F-049",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase3",
+        "month7"
+      ],
+      "title": "XmlScript: condition evaluation",
+      "type": "feature",
+      "updatedAt": "2026-01-30T04:00:03.387Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:59:46.975Z",
+      "depends-on": [
+        "F-048"
+      ],
+      "details": "Implement file selection and wildcard/pattern matching semantics.",
+      "id": "F-050",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase3",
+        "month7"
+      ],
+      "title": "XmlScript: file pattern matching",
+      "type": "feature",
+      "updatedAt": "2026-01-30T04:00:04.133Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:59:48.068Z",
+      "depends-on": [
+        "F-048"
+      ],
+      "details": "Define UI-agnostic interface for presenting installer options and collecting user choices.",
+      "id": "F-051",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase3",
+        "month7"
+      ],
+      "title": "XmlScript: UI abstraction for options",
+      "type": "feature",
+      "updatedAt": "2026-01-30T04:00:04.880Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:59:49.094Z",
+      "depends-on": [
+        "F-048",
+        "F-049",
+        "F-050",
+        "F-051"
+      ],
+      "details": "Execute parsed XmlScript plan to produce file operations and install actions.",
+      "id": "F-052",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase3",
+        "month7"
+      ],
+      "title": "XmlScript executor",
+      "type": "feature",
+      "updatedAt": "2026-01-30T04:00:05.629Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:59:50.148Z",
+      "depends-on": [
+        "F-047"
+      ],
+      "details": "Implement legacy ModScript interpreter for Morrowind/Oblivion mods.",
+      "id": "F-053",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase3",
+        "month7"
+      ],
+      "title": "ModScript interpreter",
+      "type": "feature",
+      "updatedAt": "2026-01-30T04:00:06.393Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:59:51.225Z",
+      "depends-on": [
+        "F-047"
+      ],
+      "details": "Integrate wasmtime and define WASM script interface.",
+      "id": "F-054",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase3",
+        "month7"
+      ],
+      "title": "WASM scripting foundation (wasmtime)",
+      "type": "feature",
+      "updatedAt": "2026-01-30T04:00:07.144Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T03:59:52.409Z",
+      "depends-on": [
+        "F-054"
+      ],
+      "details": "Add sandboxing limits (fs/network/time) for executing WASM scripts safely.",
+      "id": "F-055",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase3",
+        "month7"
+      ],
+      "title": "WASM script sandboxing",
+      "type": "feature",
+      "updatedAt": "2026-01-30T04:00:07.552Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T04:00:17.679Z",
+      "depends-on": [
+        "P-001"
+      ],
+      "details": "Initialize Tauri desktop app project (apps/nmm-desktop) with Rust backend.",
+      "id": "F-056",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase4",
+        "month8"
+      ],
+      "title": "Desktop: initialize Tauri project",
+      "type": "feature",
+      "updatedAt": "2026-01-30T04:01:04.166Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T04:00:18.516Z",
+      "depends-on": [
+        "F-056"
+      ],
+      "details": "Set up React frontend scaffolding, routing/state, build pipeline within Tauri app.",
+      "id": "F-057",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase4",
+        "month8"
+      ],
+      "title": "Desktop: React frontend structure",
+      "type": "feature",
+      "updatedAt": "2026-01-30T04:01:04.917Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T04:00:19.468Z",
+      "depends-on": [
+        "F-057",
+        "F-023"
+      ],
+      "details": "Expose backend command(s) for listing/selecting detected game modes.",
+      "id": "F-058",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase4",
+        "month8"
+      ],
+      "title": "Desktop: Tauri command - game mode selection",
+      "type": "feature",
+      "updatedAt": "2026-01-30T04:01:05.660Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T04:00:20.593Z",
+      "depends-on": [
+        "F-057",
+        "F-006",
+        "F-020"
+      ],
+      "details": "Expose backend command(s) for listing/adding/removing/enabling mods.",
+      "id": "F-059",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase4",
+        "month8"
+      ],
+      "title": "Desktop: Tauri command - mod list management",
+      "type": "feature",
+      "updatedAt": "2026-01-30T04:01:06.412Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T04:00:21.367Z",
+      "depends-on": [
+        "F-057",
+        "F-006",
+        "F-013",
+        "F-040",
+        "F-041"
+      ],
+      "details": "Expose backend command(s) for install/uninstall operations (archive -> vfs/install-log).",
+      "id": "F-060",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase4",
+        "month8"
+      ],
+      "title": "Desktop: Tauri command - install/uninstall",
+      "type": "feature",
+      "updatedAt": "2026-01-30T04:01:07.161Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T04:00:21.777Z",
+      "depends-on": [
+        "F-057",
+        "F-059"
+      ],
+      "details": "Implement initial mod list UI (enabled state, sorting, status).",
+      "id": "F-061",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase4",
+        "month8"
+      ],
+      "title": "Desktop UI: basic mod list view",
+      "type": "feature",
+      "updatedAt": "2026-01-30T04:01:07.910Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T04:00:22.821Z",
+      "depends-on": [
+        "F-061",
+        "F-001"
+      ],
+      "details": "Implement mod details panel (metadata, version, author, links, conflicts placeholder).",
+      "id": "F-062",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase4",
+        "month8"
+      ],
+      "title": "Desktop UI: mod details panel",
+      "type": "feature",
+      "updatedAt": "2026-01-30T04:01:08.662Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T04:00:27.294Z",
+      "depends-on": [
+        "F-061",
+        "F-030",
+        "F-033",
+        "F-036",
+        "F-038"
+      ],
+      "details": "Implement plugin ordering UI with drag-and-drop and persistence.",
+      "id": "F-063",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase4",
+        "month9"
+      ],
+      "title": "Desktop UI: plugin ordering (drag-and-drop)",
+      "type": "feature",
+      "updatedAt": "2026-01-30T04:01:09.409Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T04:00:28.348Z",
+      "depends-on": [
+        "F-057",
+        "F-006"
+      ],
+      "details": "Implement profile selector + create/clone/delete profiles; wire to backend.",
+      "id": "F-064",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase4",
+        "month9"
+      ],
+      "title": "Desktop UI: profiles",
+      "type": "feature",
+      "updatedAt": "2026-01-30T04:01:10.153Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T04:00:29.435Z",
+      "depends-on": [
+        "F-057",
+        "F-051",
+        "F-052"
+      ],
+      "details": "Build installation wizard UI powered by XmlScript UI abstraction.",
+      "id": "F-065",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase4",
+        "month9"
+      ],
+      "title": "Desktop UI: installation wizard (XmlScript)",
+      "type": "feature",
+      "updatedAt": "2026-01-30T04:01:10.917Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T04:00:30.464Z",
+      "depends-on": [
+        "F-057"
+      ],
+      "details": "Add settings UI for paths, behavior toggles, diagnostics.",
+      "id": "F-066",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase4",
+        "month9"
+      ],
+      "title": "Desktop UI: settings panel",
+      "type": "feature",
+      "updatedAt": "2026-01-30T04:01:11.663Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T04:00:31.722Z",
+      "depends-on": [
+        "F-057",
+        "F-008",
+        "F-017"
+      ],
+      "details": "Implement UI for detecting file/plugin conflicts and selecting resolution/priority.",
+      "id": "F-067",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase4",
+        "month9"
+      ],
+      "title": "Desktop UI: conflict detection/resolution",
+      "type": "feature",
+      "updatedAt": "2026-01-30T04:01:12.408Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T04:00:36.010Z",
+      "depends-on": [
+        "F-056",
+        "F-072"
+      ],
+      "details": "Implement nxm:// protocol support end-to-end (open link -> enqueue download).",
+      "id": "F-068",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase4",
+        "month10"
+      ],
+      "title": "Desktop: nxm:// protocol handler",
+      "type": "feature",
+      "updatedAt": "2026-01-30T04:01:13.153Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T04:00:37.051Z",
+      "depends-on": [
+        "F-068"
+      ],
+      "details": "Register nxm:// URL protocol handler on Windows.",
+      "id": "F-069",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase4",
+        "month10"
+      ],
+      "title": "Desktop: Windows URL protocol registration",
+      "type": "feature",
+      "updatedAt": "2026-01-30T04:01:13.576Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T04:00:38.109Z",
+      "depends-on": [
+        "F-068"
+      ],
+      "details": "Register/handle nxm:// URL scheme on macOS.",
+      "id": "F-070",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase4",
+        "month10"
+      ],
+      "title": "Desktop: macOS URL scheme handling",
+      "type": "feature",
+      "updatedAt": "2026-01-30T04:01:14.322Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T04:00:39.208Z",
+      "depends-on": [
+        "F-056"
+      ],
+      "details": "Integrate Nexus Mods API for mod search and display results in UI.",
+      "id": "F-071",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase4",
+        "month10"
+      ],
+      "title": "Nexus API: mod search",
+      "type": "feature",
+      "updatedAt": "2026-01-30T04:01:15.068Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T04:00:40.327Z",
+      "depends-on": [
+        "F-056"
+      ],
+      "details": "Implement download queue (start/pause/cancel), progress reporting, storage paths.",
+      "id": "F-072",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase4",
+        "month10"
+      ],
+      "title": "Nexus API: download queue",
+      "type": "feature",
+      "updatedAt": "2026-01-30T04:01:15.815Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T04:00:41.349Z",
+      "depends-on": [
+        "F-071",
+        "F-059"
+      ],
+      "details": "Implement update checking for installed mods via Nexus Mods API.",
+      "id": "F-073",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase4",
+        "month10"
+      ],
+      "title": "Nexus API: update checking",
+      "type": "feature",
+      "updatedAt": "2026-01-30T04:01:16.569Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T04:00:42.414Z",
+      "depends-on": [
+        "F-057"
+      ],
+      "details": "Implement theming (light/dark + game-specific theme hooks).",
+      "id": "F-074",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase4",
+        "month10"
+      ],
+      "title": "Desktop: theme support",
+      "type": "feature",
+      "updatedAt": "2026-01-30T04:01:16.979Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T04:00:43.393Z",
+      "depends-on": [
+        "F-057"
+      ],
+      "details": "Add global/local keyboard shortcuts for common actions.",
+      "id": "F-075",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase4",
+        "month10"
+      ],
+      "title": "Desktop: keyboard shortcuts",
+      "type": "feature",
+      "updatedAt": "2026-01-30T04:01:17.726Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T04:00:44.650Z",
+      "depends-on": [
+        "F-061",
+        "F-074"
+      ],
+      "details": "Improve accessibility (focus states, ARIA, contrast, screen reader labels).",
+      "id": "F-076",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase4",
+        "month10"
+      ],
+      "title": "Desktop: accessibility improvements",
+      "type": "feature",
+      "updatedAt": "2026-01-30T04:01:18.477Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T04:01:24.198Z",
+      "depends-on": [
+        "F-011",
+        "F-006",
+        "F-056"
+      ],
+      "details": "Build importer that migrates existing NMM InstallLog.xml into SQLite install log.",
+      "id": "F-077",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase5",
+        "month11"
+      ],
+      "title": "Migration: import InstallLog.xml",
+      "type": "feature",
+      "updatedAt": "2026-01-30T04:01:43.076Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T04:01:25.351Z",
+      "depends-on": [
+        "F-018",
+        "F-056"
+      ],
+      "details": "Build importer that migrates existing NMM VirtualModConfig.xml into new VFS config.",
+      "id": "F-078",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase5",
+        "month11"
+      ],
+      "title": "Migration: import VirtualModConfig.xml",
+      "type": "feature",
+      "updatedAt": "2026-01-30T04:01:43.826Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T04:01:26.368Z",
+      "depends-on": [
+        "F-064",
+        "F-056"
+      ],
+      "details": "Migrate NMM profile data into new profiles system.",
+      "id": "F-079",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase5",
+        "month11"
+      ],
+      "title": "Migration: profile migration",
+      "type": "feature",
+      "updatedAt": "2026-01-30T04:01:44.571Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T04:01:27.454Z",
+      "depends-on": [
+        "F-056",
+        "F-060"
+      ],
+      "details": "Optional: import Vortex installations into NMM-Rust.",
+      "id": "F-080",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase5",
+        "month11"
+      ],
+      "title": "Migration: Vortex importer (optional)",
+      "type": "feature",
+      "updatedAt": "2026-01-30T04:01:45.318Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T04:01:28.568Z",
+      "depends-on": [
+        "F-060",
+        "F-063",
+        "F-064",
+        "F-065",
+        "F-067"
+      ],
+      "details": "Add end-to-end integration tests covering install/uninstall, conflicts, profiles, scripting.",
+      "id": "F-081",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase5",
+        "month11"
+      ],
+      "title": "Testing: comprehensive integration suite",
+      "type": "feature",
+      "updatedAt": "2026-01-30T04:01:46.074Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T04:01:29.793Z",
+      "depends-on": [
+        "F-006",
+        "F-039",
+        "F-060"
+      ],
+      "details": "Add benchmarks for install/uninstall, archive extraction, DB operations.",
+      "id": "I-001",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase5",
+        "month11"
+      ],
+      "title": "Performance benchmarking",
+      "type": "improvement",
+      "updatedAt": "2026-01-30T04:01:46.617Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T04:01:31.132Z",
+      "depends-on": [
+        "I-001"
+      ],
+      "details": "Profile and reduce memory usage in archive extraction, caching, and UI.",
+      "id": "I-002",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase5",
+        "month11"
+      ],
+      "title": "Memory usage optimization",
+      "type": "improvement",
+      "updatedAt": "2026-01-30T04:01:47.419Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T04:01:53.059Z",
+      "depends-on": [
+        "F-060",
+        "F-061"
+      ],
+      "details": "Write end-user docs: install, setup, adding mods, troubleshooting.",
+      "id": "P-007",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase5",
+        "month12"
+      ],
+      "title": "Docs: user documentation",
+      "type": "planning",
+      "updatedAt": "2026-01-30T04:02:13.447Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T04:01:54.143Z",
+      "depends-on": [
+        "F-001",
+        "F-002",
+        "F-003",
+        "F-005"
+      ],
+      "details": "Improve Rust crate docs, API examples, and architecture notes.",
+      "id": "P-008",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase5",
+        "month12"
+      ],
+      "title": "Docs: developer documentation (crate docs)",
+      "type": "planning",
+      "updatedAt": "2026-01-30T04:02:14.197Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T04:01:55.234Z",
+      "depends-on": [
+        "F-020",
+        "F-023",
+        "F-029"
+      ],
+      "details": "Document how to add new game modes, detection, and plugin handling.",
+      "id": "P-009",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase5",
+        "month12"
+      ],
+      "title": "Docs: game mode development guide",
+      "type": "planning",
+      "updatedAt": "2026-01-30T04:02:14.945Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T04:01:56.272Z",
+      "depends-on": [
+        "P-011",
+        "F-082",
+        "F-083",
+        "F-084"
+      ],
+      "details": "Plan and run beta: feedback channels, crash reporting, release cadence.",
+      "id": "P-010",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase5",
+        "month12"
+      ],
+      "title": "Beta testing program",
+      "type": "planning",
+      "updatedAt": "2026-01-30T04:02:18.442Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T04:01:57.415Z",
+      "depends-on": [
+        "P-004"
+      ],
+      "details": "Finalize release pipeline (versioning, changelog, signing, artifact publishing).",
+      "id": "P-011",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase5",
+        "month12"
+      ],
+      "title": "Release automation (end-to-end)",
+      "type": "planning",
+      "updatedAt": "2026-01-30T04:02:15.693Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T04:01:58.492Z",
+      "depends-on": [
+        "P-011",
+        "F-081"
+      ],
+      "details": "Create Windows installer/package (MSI/MSIX), signing, updates.",
+      "id": "F-082",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase5",
+        "month12"
+      ],
+      "title": "Packaging: Windows MSI/MSIX",
+      "type": "feature",
+      "updatedAt": "2026-01-30T04:02:16.442Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T04:01:59.561Z",
+      "depends-on": [
+        "P-011",
+        "F-081"
+      ],
+      "details": "Create macOS DMG packaging, signing/notarization.",
+      "id": "F-083",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase5",
+        "month12"
+      ],
+      "title": "Packaging: macOS DMG",
+      "type": "feature",
+      "updatedAt": "2026-01-30T04:02:16.863Z"
+    },
+    {
+      "blocks": [],
+      "createdAt": "2026-01-30T04:02:00.929Z",
+      "depends-on": [
+        "P-011",
+        "F-081"
+      ],
+      "details": "Create Linux packages (AppImage and/or Flatpak) for distribution.",
+      "id": "F-084",
+      "notes": "",
+      "passes-tests": false,
+      "priority": "medium",
+      "status": "not-started",
+      "tags": [
+        "phase5",
+        "month12"
+      ],
+      "title": "Packaging: Linux AppImage/Flatpak",
+      "type": "feature",
+      "updatedAt": "2026-01-30T04:02:17.612Z"
+    }
+  ]
+}
