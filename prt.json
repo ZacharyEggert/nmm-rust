@@ -52,16 +52,16 @@
       "details": "Add test coverage reporting in CI (choose tool + upload/report).",
       "id": "P-003",
       "notes": "",
-      "passes-tests": false,
+      "passes-tests": true,
       "priority": "medium",
-      "status": "not-started",
+      "status": "completed",
       "tags": [
         "phase1",
         "month1"
       ],
       "title": "CI/CD: coverage reporting",
       "type": "planning",
-      "updatedAt": "2026-01-30T03:56:56.193Z"
+      "updatedAt": "2026-01-30T15:27:19.660Z"
     },
     {
       "blocks": [],
