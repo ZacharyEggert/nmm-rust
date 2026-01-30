@@ -72,16 +72,16 @@
       "details": "Automate tagged release builds/artifacts via GitHub Actions.",
       "id": "P-004",
       "notes": "",
-      "passes-tests": false,
+      "passes-tests": true,
       "priority": "medium",
-      "status": "not-started",
+      "status": "completed",
       "tags": [
         "phase1",
         "month1"
       ],
       "title": "CI/CD: release automation",
       "type": "planning",
-      "updatedAt": "2026-01-30T03:56:56.931Z"
+      "updatedAt": "2026-01-30T15:45:16.482Z"
     },
     {
       "blocks": [],
