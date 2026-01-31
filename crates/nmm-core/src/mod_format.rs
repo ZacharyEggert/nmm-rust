@@ -155,7 +155,10 @@ impl ModFormatRegistry {
 
     /// Get a format by ID.
     pub fn get_format(&self, id: &str) -> Option<&dyn ModFormat> {
-        self.formats.iter().find(|f| f.id() == id).map(|f| f.as_ref())
+        self.formats
+            .iter()
+            .find(|f| f.id() == id)
+            .map(|f| f.as_ref())
     }
 
     /// Get all registered formats.

@@ -92,16 +92,16 @@
       "details": "Implement ModInfo metadata struct with serde Serialize/Deserialize + required fields + defaults.",
       "id": "F-001",
       "notes": "",
-      "passes-tests": false,
+      "passes-tests": true,
       "priority": "medium",
-      "status": "not-started",
+      "status": "completed",
       "tags": [
         "phase1",
         "month1"
       ],
       "title": "nmm-core: ModInfo with serde support",
       "type": "feature",
-      "updatedAt": "2026-01-30T03:56:57.672Z"
+      "updatedAt": "2026-01-31T00:33:20.826Z"
     },
     {
       "blocks": [],
