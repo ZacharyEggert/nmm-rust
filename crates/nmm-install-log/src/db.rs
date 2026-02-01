@@ -8,8 +8,9 @@
 use std::path::Path;
 use std::sync::Mutex;
 
+use chrono::{DateTime, Utc};
 use nmm_core::{IniEdit, InstallLog, InstallLogError, ModInfo, ORIGINAL_VALUES_KEY};
-use rusqlite::Connection;
+use rusqlite::{Connection, OptionalExtension};
 
 use crate::schema;
 
@@ -122,24 +123,122 @@ impl SqliteInstallLog {
 impl InstallLog for SqliteInstallLog {
     // --- Mod tracking (F-007) ------------------------------------------------
 
-    fn add_mod(&mut self, _mod_key: &str, _info: &ModInfo) -> Result<(), InstallLogError> {
-        todo!("F-007: add_mod — INSERT into mods")
+    fn add_mod(&mut self, mod_key: &str, info: &ModInfo) -> Result<(), InstallLogError> {
+        if self.mod_exists(mod_key)? {
+            return Err(InstallLogError::AlreadyRegistered(mod_key.to_owned()));
+        }
+        let conn = self.conn.lock().unwrap();
+        conn.execute(
+            "INSERT INTO mods (mod_key, archive_path, name, version, machine_version, install_date) \
+             VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
+            rusqlite::params![
+                mod_key,
+                info.file_name,
+                info.name,
+                info.version,
+                info.machine_version.as_ref().map(|v| v.to_string()),
+                info.install_date.map(|dt| dt.to_rfc3339()),
+            ],
+        )
+        .map_err(Self::db_err)?;
+        Ok(())
     }
 
-    fn replace_mod(&mut self, _mod_key: &str, _info: &ModInfo) -> Result<(), InstallLogError> {
-        todo!("F-007: replace_mod — UPDATE mods row")
+    fn replace_mod(&mut self, mod_key: &str, info: &ModInfo) -> Result<(), InstallLogError> {
+        if !self.mod_exists(mod_key)? {
+            return Err(InstallLogError::ModNotFound(mod_key.to_owned()));
+        }
+        let conn = self.conn.lock().unwrap();
+        conn.execute(
+            "UPDATE mods SET archive_path = ?1, name = ?2, version = ?3, \
+             machine_version = ?4, install_date = ?5 WHERE mod_key = ?6",
+            rusqlite::params![
+                info.file_name,
+                info.name,
+                info.version,
+                info.machine_version.as_ref().map(|v| v.to_string()),
+                info.install_date.map(|dt| dt.to_rfc3339()),
+                mod_key,
+            ],
+        )
+        .map_err(Self::db_err)?;
+        Ok(())
     }
 
-    fn remove_mod(&mut self, _mod_key: &str) -> Result<(), InstallLogError> {
-        todo!("F-007: remove_mod — DELETE from mods (CASCADE removes children)")
+    fn remove_mod(&mut self, mod_key: &str) -> Result<(), InstallLogError> {
+        if !self.mod_exists(mod_key)? {
+            return Err(InstallLogError::ModNotFound(mod_key.to_owned()));
+        }
+        let conn = self.conn.lock().unwrap();
+        conn.execute("DELETE FROM mods WHERE mod_key = ?1", [mod_key])
+            .map_err(Self::db_err)?;
+        Ok(())
     }
 
-    fn get_mod(&self, _mod_key: &str) -> Option<ModInfo> {
-        todo!("F-007: get_mod — SELECT from mods, map to ModInfo")
+    fn get_mod(&self, mod_key: &str) -> Option<ModInfo> {
+        let conn = self.conn.lock().unwrap();
+        conn.query_row(
+            "SELECT archive_path, name, version, machine_version, install_date \
+             FROM mods WHERE mod_key = ?1",
+            [mod_key],
+            |row| {
+                let file_name: String = row.get(0)?;
+                let name: String = row.get(1)?;
+                let version: String = row.get(2)?;
+                let machine_version = row
+                    .get::<_, Option<String>>(3)?
+                    .and_then(|s| ModInfo::parse_version(&s));
+                let install_date = row
+                    .get::<_, Option<String>>(4)?
+                    .and_then(|s| DateTime::parse_from_rfc3339(&s).ok())
+                    .map(|dt| dt.with_timezone(&Utc));
+                Ok(ModInfo {
+                    file_name,
+                    name,
+                    version,
+                    machine_version,
+                    install_date,
+                    ..Default::default()
+                })
+            },
+        )
+        .optional()
+        .ok()
+        .flatten()
     }
 
     fn active_mods(&self) -> Vec<ModInfo> {
-        todo!("F-007: active_mods — SELECT all from mods")
+        let conn = self.conn.lock().unwrap();
+        let mut stmt = match conn.prepare(
+            "SELECT archive_path, name, version, machine_version, install_date FROM mods",
+        ) {
+            Ok(s) => s,
+            Err(_) => return vec![],
+        };
+        let rows = stmt.query_map([], |row| {
+            let file_name: String = row.get(0)?;
+            let name: String = row.get(1)?;
+            let version: String = row.get(2)?;
+            let machine_version = row
+                .get::<_, Option<String>>(3)?
+                .and_then(|s| ModInfo::parse_version(&s));
+            let install_date = row
+                .get::<_, Option<String>>(4)?
+                .and_then(|s| DateTime::parse_from_rfc3339(&s).ok())
+                .map(|dt| dt.with_timezone(&Utc));
+            Ok(ModInfo {
+                file_name,
+                name,
+                version,
+                machine_version,
+                install_date,
+                ..Default::default()
+            })
+        });
+        match rows {
+            Ok(iter) => iter.filter_map(|r| r.ok()).collect(),
+            Err(_) => vec![],
+        }
     }
 
     // --- File ownership (F-008) ----------------------------------------------
@@ -416,5 +515,306 @@ mod tests {
     fn in_transaction_initially_false() {
         let log = fresh_log();
         assert!(!log.in_transaction);
+    }
+
+    // --- add_mod -------------------------------------------------------------
+
+    #[test]
+    fn add_mod_inserts_row() {
+        let mut log = fresh_log();
+        let info = ModInfo {
+            file_name: "TestMod.7z".into(),
+            name: "Test Mod".into(),
+            version: "1.2.3".into(),
+            machine_version: Some(semver::Version::parse("1.2.3").unwrap()),
+            install_date: Some(DateTime::parse_from_rfc3339("2024-06-15T10:30:00Z").unwrap().with_timezone(&Utc)),
+            ..Default::default()
+        };
+        log.add_mod("mod_001", &info).unwrap();
+
+        let conn = log.conn.lock().unwrap();
+        let (key, archive, name, ver, mv, id): (String, String, String, String, Option<String>, Option<String>) = conn
+            .query_row(
+                "SELECT mod_key, archive_path, name, version, machine_version, install_date FROM mods WHERE mod_key = 'mod_001'",
+                [],
+                |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?, row.get(3)?, row.get(4)?, row.get(5)?)),
+            )
+            .unwrap();
+
+        assert_eq!(key, "mod_001");
+        assert_eq!(archive, "TestMod.7z");
+        assert_eq!(name, "Test Mod");
+        assert_eq!(ver, "1.2.3");
+        assert_eq!(mv.as_deref(), Some("1.2.3"));
+        assert!(id.is_some());
+        assert!(id.unwrap().contains("2024-06-15"));
+    }
+
+    #[test]
+    fn add_mod_returns_already_registered() {
+        let mut log = fresh_log();
+        let info = ModInfo::new("Mod A", "a.7z");
+        log.add_mod("dup_key", &info).unwrap();
+        match log.add_mod("dup_key", &info) {
+            Err(InstallLogError::AlreadyRegistered(key)) => assert_eq!(key, "dup_key"),
+            other => panic!("expected AlreadyRegistered, got {:?}", other),
+        }
+    }
+
+    #[test]
+    fn add_mod_with_null_optionals() {
+        let mut log = fresh_log();
+        let info = ModInfo {
+            file_name: "Null.7z".into(),
+            name: "Null Mod".into(),
+            version: "0.1".into(),
+            machine_version: None,
+            install_date: None,
+            ..Default::default()
+        };
+        log.add_mod("null_mod", &info).unwrap();
+
+        let conn = log.conn.lock().unwrap();
+        let (mv, id): (Option<String>, Option<String>) = conn
+            .query_row(
+                "SELECT machine_version, install_date FROM mods WHERE mod_key = 'null_mod'",
+                [],
+                |row| Ok((row.get(0)?, row.get(1)?)),
+            )
+            .unwrap();
+        assert!(mv.is_none(), "machine_version must be NULL");
+        assert!(id.is_none(), "install_date must be NULL");
+    }
+
+    // --- replace_mod ---------------------------------------------------------
+
+    #[test]
+    fn replace_mod_updates_all_columns() {
+        let mut log = fresh_log();
+        log.conn.lock().unwrap().execute(
+            "INSERT INTO mods (mod_key, archive_path, name, version) VALUES ('rep_mod', 'old.7z', 'Old', '0.1')",
+            [],
+        ).unwrap();
+
+        let new_info = ModInfo {
+            file_name: "new.7z".into(),
+            name: "New Name".into(),
+            version: "2.0.0".into(),
+            machine_version: Some(semver::Version::parse("2.0.0").unwrap()),
+            install_date: Some(DateTime::parse_from_rfc3339("2025-01-01T00:00:00Z").unwrap().with_timezone(&Utc)),
+            ..Default::default()
+        };
+        log.replace_mod("rep_mod", &new_info).unwrap();
+
+        let conn = log.conn.lock().unwrap();
+        let (archive, name, ver, mv, id): (String, String, String, Option<String>, Option<String>) = conn
+            .query_row(
+                "SELECT archive_path, name, version, machine_version, install_date FROM mods WHERE mod_key = 'rep_mod'",
+                [],
+                |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?, row.get(3)?, row.get(4)?)),
+            )
+            .unwrap();
+        assert_eq!(archive, "new.7z");
+        assert_eq!(name, "New Name");
+        assert_eq!(ver, "2.0.0");
+        assert_eq!(mv.as_deref(), Some("2.0.0"));
+        assert!(id.is_some());
+    }
+
+    #[test]
+    fn replace_mod_returns_mod_not_found() {
+        let mut log = fresh_log();
+        let info = ModInfo::new("Ghost", "ghost.7z");
+        match log.replace_mod("ghost_key", &info) {
+            Err(InstallLogError::ModNotFound(key)) => assert_eq!(key, "ghost_key"),
+            other => panic!("expected ModNotFound, got {:?}", other),
+        }
+    }
+
+    #[test]
+    fn replace_mod_rejects_original_values_key() {
+        let mut log = fresh_log();
+        let info = ModInfo::new("OV", "ov.7z");
+        match log.replace_mod(ORIGINAL_VALUES_KEY, &info) {
+            Err(InstallLogError::ModNotFound(key)) => assert_eq!(key, ORIGINAL_VALUES_KEY),
+            other => panic!("expected ModNotFound for ORIGINAL_VALUES_KEY, got {:?}", other),
+        }
+    }
+
+    // --- remove_mod ----------------------------------------------------------
+
+    #[test]
+    fn remove_mod_deletes_row() {
+        let mut log = fresh_log();
+        log.conn.lock().unwrap().execute(
+            "INSERT INTO mods (mod_key, archive_path, name) VALUES ('del_mod', 'd.7z', 'Del')",
+            [],
+        ).unwrap();
+        assert!(log.mod_exists("del_mod").unwrap());
+        log.remove_mod("del_mod").unwrap();
+        assert!(!log.mod_exists("del_mod").unwrap());
+    }
+
+    #[test]
+    fn remove_mod_returns_mod_not_found() {
+        let mut log = fresh_log();
+        match log.remove_mod("no_such_mod") {
+            Err(InstallLogError::ModNotFound(key)) => assert_eq!(key, "no_such_mod"),
+            other => panic!("expected ModNotFound, got {:?}", other),
+        }
+    }
+
+    #[test]
+    fn remove_mod_rejects_original_values_key() {
+        let mut log = fresh_log();
+        match log.remove_mod(ORIGINAL_VALUES_KEY) {
+            Err(InstallLogError::ModNotFound(key)) => assert_eq!(key, ORIGINAL_VALUES_KEY),
+            other => panic!("expected ModNotFound for ORIGINAL_VALUES_KEY, got {:?}", other),
+        }
+    }
+
+    #[test]
+    fn remove_mod_cascades_child_rows() {
+        let mut log = fresh_log();
+        {
+            let conn = log.conn.lock().unwrap();
+            conn.execute(
+                "INSERT INTO mods (mod_key, archive_path, name) VALUES ('cascade_mod', 'c.7z', 'Cascade')",
+                [],
+            ).unwrap();
+            conn.execute(
+                "INSERT INTO file_owners (file_path, mod_key, install_order) VALUES ('Data/test.dds', 'cascade_mod', 1)",
+                [],
+            ).unwrap();
+        }
+
+        log.remove_mod("cascade_mod").unwrap();
+
+        let conn = log.conn.lock().unwrap();
+        let child_count: i64 = conn
+            .query_row(
+                "SELECT COUNT(*) FROM file_owners WHERE mod_key = 'cascade_mod'",
+                [],
+                |row| row.get(0),
+            )
+            .unwrap();
+        assert_eq!(child_count, 0, "CASCADE must delete child file_owners rows");
+    }
+
+    // --- get_mod -------------------------------------------------------------
+
+    #[test]
+    fn get_mod_returns_none_for_missing() {
+        let log = fresh_log();
+        assert!(log.get_mod("nonexistent").is_none());
+    }
+
+    #[test]
+    fn get_mod_returns_populated_mod_info() {
+        let mut log = fresh_log();
+        let info = ModInfo {
+            file_name: "Full.7z".into(),
+            name: "Full Mod".into(),
+            version: "3.1.4".into(),
+            machine_version: Some(semver::Version::parse("3.1.4").unwrap()),
+            install_date: Some(DateTime::parse_from_rfc3339("2024-12-25T12:00:00Z").unwrap().with_timezone(&Utc)),
+            ..Default::default()
+        };
+        log.add_mod("full_mod", &info).unwrap();
+
+        let got = log.get_mod("full_mod").unwrap();
+        assert_eq!(got.file_name, "Full.7z");
+        assert_eq!(got.name, "Full Mod");
+        assert_eq!(got.version, "3.1.4");
+        assert_eq!(got.machine_version, Some(semver::Version::parse("3.1.4").unwrap()));
+        assert!(got.install_date.is_some());
+        assert_eq!(got.install_date.unwrap().format("%Y-%m-%d").to_string(), "2024-12-25");
+    }
+
+    #[test]
+    fn get_mod_handles_null_optionals() {
+        let mut log = fresh_log();
+        let info = ModInfo {
+            file_name: "Sparse.7z".into(),
+            name: "Sparse".into(),
+            version: "1.0".into(),
+            machine_version: None,
+            install_date: None,
+            ..Default::default()
+        };
+        log.add_mod("sparse_mod", &info).unwrap();
+
+        let got = log.get_mod("sparse_mod").unwrap();
+        assert!(got.machine_version.is_none());
+        assert!(got.install_date.is_none());
+    }
+
+    #[test]
+    fn get_mod_unpersisted_fields_are_default() {
+        let mut log = fresh_log();
+        let info = ModInfo {
+            file_name: "Def.7z".into(),
+            name: "Def Mod".into(),
+            version: "1.0".into(),
+            author: Some("Someone".into()),
+            id: Some("12345".into()),
+            screenshot: Some(vec![0xFF, 0xD8]),
+            ..Default::default()
+        };
+        log.add_mod("def_mod", &info).unwrap();
+
+        let got = log.get_mod("def_mod").unwrap();
+        assert!(got.author.is_none());
+        assert!(got.id.is_none());
+        assert!(got.screenshot.is_none());
+        assert!(got.description.is_none());
+        assert!(got.download_id.is_none());
+    }
+
+    // --- active_mods ---------------------------------------------------------
+
+    #[test]
+    fn active_mods_empty_when_no_mods() {
+        let log = fresh_log();
+        assert!(log.active_mods().is_empty());
+    }
+
+    #[test]
+    fn active_mods_returns_all_mods() {
+        let mut log = fresh_log();
+        log.add_mod("m1", &ModInfo::new("Alpha", "a.7z")).unwrap();
+        log.add_mod("m2", &ModInfo::new("Beta", "b.7z")).unwrap();
+        log.add_mod("m3", &ModInfo::new("Gamma", "g.7z")).unwrap();
+
+        let mods = log.active_mods();
+        assert_eq!(mods.len(), 3);
+
+        let names: std::collections::HashSet<&str> = mods.iter().map(|m| m.name.as_str()).collect();
+        assert!(names.contains("Alpha"));
+        assert!(names.contains("Beta"));
+        assert!(names.contains("Gamma"));
+    }
+
+    #[test]
+    fn active_mods_roundtrip_matches_get_mod() {
+        let mut log = fresh_log();
+        let info = ModInfo {
+            file_name: "RT.7z".into(),
+            name: "Roundtrip".into(),
+            version: "2.5.1".into(),
+            machine_version: Some(semver::Version::parse("2.5.1").unwrap()),
+            install_date: Some(DateTime::parse_from_rfc3339("2024-03-10T08:00:00Z").unwrap().with_timezone(&Utc)),
+            ..Default::default()
+        };
+        log.add_mod("rt_mod", &info).unwrap();
+
+        let from_active = &log.active_mods()[0];
+        let from_get = log.get_mod("rt_mod").unwrap();
+
+        assert_eq!(from_active.file_name, from_get.file_name);
+        assert_eq!(from_active.name, from_get.name);
+        assert_eq!(from_active.version, from_get.version);
+        assert_eq!(from_active.machine_version, from_get.machine_version);
+        assert_eq!(from_active.install_date, from_get.install_date);
     }
 }

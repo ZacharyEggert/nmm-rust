@@ -10,7 +10,11 @@ rust-version.workspace = true
 [dependencies]
 rusqlite.workspace = true
 thiserror.workspace = true
+chrono.workspace = true
+semver.workspace = true
 nmm-core = { path = "../nmm-core" }
 
 [dev-dependencies]
 tempfile.workspace = true
+chrono.workspace = true
+nmm-core = { path = "../nmm-core" }

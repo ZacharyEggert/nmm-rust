@@ -257,16 +257,16 @@
       "details": "Implement mod registration + active mods list persisted in SQLite.",
       "id": "F-007",
       "notes": "",
-      "passes-tests": false,
+      "passes-tests": true,
       "priority": "medium",
-      "status": "not-started",
+      "status": "completed",
       "tags": [
         "phase1",
         "month2"
       ],
       "title": "nmm-install-log: implement mods table",
       "type": "feature",
-      "updatedAt": "2026-01-30T03:57:29.802Z"
+      "updatedAt": "2026-02-01T19:32:31.296Z"
     },
     {
       "blocks": [],
