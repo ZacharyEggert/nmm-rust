@@ -1,0 +1,22 @@
+{
+    "id": "12345",
+    "download_id": "67890",
+    "name": "Sample Texture Pack",
+    "file_name": "SampleTexturePack_v2.1.0.7z",
+    "version": "2.1.0",
+    "machine_version": "2.1.0",
+    "author": "TestAuthor",
+    "description": "A comprehensive texture overhaul for testing purposes.",
+    "category_id": 42,
+    "custom_category_id": 7,
+    "website": "https://example.com/mods/sample-texture-pack",
+    "download_date": "2024-06-15T10:30:00Z",
+    "install_date": "2024-06-15T11:00:00Z",
+    "is_endorsed": true,
+    "load_order": 5,
+    "last_known_version": "2.1.0",
+    "screenshot": [137, 80, 78, 71],
+    "update_warning_enabled": true,
+    "update_checks_enabled": true,
+    "new_load_order": 8
+}
