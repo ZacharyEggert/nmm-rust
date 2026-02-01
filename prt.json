@@ -195,16 +195,16 @@
       "details": "Design schema for mods/file_owners/ini_edits tables + indices + migration strategy.",
       "id": "P-006",
       "notes": "",
-      "passes-tests": false,
+      "passes-tests": true,
       "priority": "medium",
-      "status": "not-started",
+      "status": "completed",
       "tags": [
         "phase1",
         "month2"
       ],
       "title": "Install log: design SQLite schema",
       "type": "planning",
-      "updatedAt": "2026-01-30T03:57:27.507Z"
+      "updatedAt": "2026-02-01T05:31:08.572Z"
     },
     {
       "blocks": [],

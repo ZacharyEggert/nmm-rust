@@ -4,7 +4,7 @@ members = [
     "crates/nmm-core",
     "tests/integration",
 #    "crates/nmm-vfs",
-#    "crates/nmm-install-log",
+    "crates/nmm-install-log",
 #    "crates/nmm-archive",
 #    "crates/nmm-scripting",
 #    "crates/nmm-plugin-manager",
