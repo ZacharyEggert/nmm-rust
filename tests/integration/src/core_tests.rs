@@ -1,6 +1,6 @@
 use nmm_core::{
-    FormatConfidence, GameModeDescriptor, GameTheme, Mod, ModFormatError, ModFormatRegistry,
-    ModInfo, PluginError,
+    FormatConfidence, GameModeDescriptor, GameTheme, IniEdit, InstallLog, InstallLogError, Mod,
+    ModFormatError, ModFormatRegistry, ModInfo, PluginError, ORIGINAL_VALUES_KEY,
 };
 use std::path::{Path, PathBuf};
 
@@ -40,7 +40,10 @@ fn fixture_mod_info_round_trip() {
     assert_eq!(original.author, round_tripped.author);
     assert_eq!(original.description, round_tripped.description);
     assert_eq!(original.category_id, round_tripped.category_id);
-    assert_eq!(original.custom_category_id, round_tripped.custom_category_id);
+    assert_eq!(
+        original.custom_category_id,
+        round_tripped.custom_category_id
+    );
     assert_eq!(original.website, round_tripped.website);
     assert_eq!(original.download_date, round_tripped.download_date);
     assert_eq!(original.install_date, round_tripped.install_date);
@@ -230,7 +233,9 @@ fn format_registry_get_by_id() {
 #[test]
 fn format_registry_empty_returns_none() {
     let registry = ModFormatRegistry::new();
-    assert!(registry.detect_format(Path::new("anything.fomod")).is_none());
+    assert!(registry
+        .detect_format(Path::new("anything.fomod"))
+        .is_none());
 }
 
 // ---------------------------------------------------------------------------
@@ -246,10 +251,7 @@ fn plugin_error_invalid_display() {
 #[test]
 fn plugin_error_not_found_display() {
     let e = PluginError::NotFound(PathBuf::from("Data/plugins/missing.esp"));
-    assert_eq!(
-        e.to_string(),
-        "Plugin not found: Data/plugins/missing.esp"
-    );
+    assert_eq!(e.to_string(), "Plugin not found: Data/plugins/missing.esp");
 }
 
 #[test]
@@ -294,8 +296,7 @@ fn symlink_inside_mock_game_dir() {
 
     #[cfg(target_os = "windows")]
     {
-        std::os::windows::fs::symlink_file(&source, &link)
-            .expect("symlink_file failed on Windows");
+        std::os::windows::fs::symlink_file(&source, &link).expect("symlink_file failed on Windows");
     }
 
     #[cfg(not(target_os = "windows"))]
@@ -307,4 +308,103 @@ fn symlink_inside_mock_game_dir() {
     assert!(link.exists(), "symlink must exist");
     let content = std::fs::read_to_string(&link).expect("read through symlink");
     assert_eq!(content, "hello symlink");
+}
+
+// ---------------------------------------------------------------------------
+// InstallLog trait and IniEdit integration tests
+// ---------------------------------------------------------------------------
+
+#[test]
+fn install_log_trait_importable() {
+    // Verify that the trait, struct, error, and constant are all accessible from nmm_core.
+    let edit = IniEdit::new("Test.ini", "Section", "Key");
+    assert_eq!(edit.file, "Test.ini");
+    assert_eq!(edit.section, "Section");
+    assert_eq!(edit.key, "Key");
+
+    // Verify we can name the trait object type.
+    fn _takes_install_log(_log: &dyn InstallLog) {}
+
+    // Verify all error variants are constructible.
+    let _e1 = InstallLogError::ModNotFound("test".into());
+    let _e2 = InstallLogError::AlreadyRegistered("test".into());
+    let _e3 = InstallLogError::EntryNotFound("test".into());
+    let _e4 = InstallLogError::NoActiveTransaction;
+    let _e5 = InstallLogError::TransactionAlreadyActive;
+
+    // Verify constant is accessible.
+    assert_eq!(ORIGINAL_VALUES_KEY, "<<ORIGINAL_VALUES>>");
+}
+
+#[test]
+fn ini_edit_case_insensitive_round_trip() {
+    use std::collections::HashSet;
+
+    let edit1 = IniEdit::new("Skyrim.ini", "Display", "bFullScreen");
+    let edit2 = IniEdit::new("SKYRIM.INI", "DISPLAY", "BFULLSCREEN");
+
+    // Equality must be case-insensitive.
+    assert_eq!(
+        edit1, edit2,
+        "IniEdit equality must ignore ASCII case differences"
+    );
+
+    // HashSet must treat them as the same item.
+    let mut set = HashSet::new();
+    set.insert(edit1);
+    set.insert(edit2);
+
+    assert_eq!(
+        set.len(),
+        1,
+        "HashSet must deduplicate case-variant IniEdits"
+    );
+}
+
+#[test]
+fn install_log_error_variants_display() {
+    let e = InstallLogError::ModNotFound("my_mod_123".into());
+    let display = e.to_string();
+    assert!(!display.is_empty(), "Error display must not be empty");
+    assert!(
+        display.contains("my_mod_123"),
+        "Error display must include context"
+    );
+
+    let e = InstallLogError::AlreadyRegistered("duplicate_mod".into());
+    let display = e.to_string();
+    assert!(!display.is_empty());
+    assert!(display.contains("duplicate_mod"));
+
+    let e = InstallLogError::EntryNotFound("Data/test.dds".into());
+    let display = e.to_string();
+    assert!(!display.is_empty());
+    assert!(display.contains("Data/test.dds"));
+
+    let e = InstallLogError::NoActiveTransaction;
+    assert_eq!(
+        e.to_string(),
+        "No active transaction",
+        "Specific message expected"
+    );
+
+    let e = InstallLogError::TransactionAlreadyActive;
+    assert_eq!(
+        e.to_string(),
+        "Transaction already active",
+        "Specific message expected"
+    );
+
+    // Test From<io::Error>.
+    let io_err = std::io::Error::new(std::io::ErrorKind::PermissionDenied, "access denied");
+    let log_err = InstallLogError::from(io_err);
+    let display = log_err.to_string();
+    assert!(
+        display.contains("IO error"),
+        "From<io::Error> must wrap properly"
+    );
+    assert!(
+        display.contains("access denied"),
+        "Inner message must be preserved"
+    );
 }

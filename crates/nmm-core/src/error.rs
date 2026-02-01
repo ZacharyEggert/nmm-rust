@@ -71,6 +71,34 @@ pub enum GameModeError {
     Io(#[from] std::io::Error),
 }
 
+/// Errors that can occur when working with the install log.
+#[derive(Debug, Error)]
+pub enum InstallLogError {
+    /// The mod identified by the given key is not registered.
+    #[error("Mod not found: {0}")]
+    ModNotFound(String),
+
+    /// A mod with this key is already registered.
+    #[error("Mod already registered: {0}")]
+    AlreadyRegistered(String),
+
+    /// The requested ownership entry does not exist.
+    #[error("Entry not found: {0}")]
+    EntryNotFound(String),
+
+    /// No transaction is currently active.
+    #[error("No active transaction")]
+    NoActiveTransaction,
+
+    /// A transaction is already active.
+    #[error("Transaction already active")]
+    TransactionAlreadyActive,
+
+    /// An I/O error occurred.
+    #[error("IO error: {0}")]
+    Io(#[from] std::io::Error),
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -119,5 +147,31 @@ mod tests {
 
         let e = GameModeError::UnsupportedVersion("0.9".into());
         assert_eq!(e.to_string(), "Unsupported game version: 0.9");
+    }
+
+    #[test]
+    fn test_install_log_error_display() {
+        let e = InstallLogError::ModNotFound("mod_123".into());
+        assert_eq!(e.to_string(), "Mod not found: mod_123");
+
+        let e = InstallLogError::AlreadyRegistered("mod_456".into());
+        assert_eq!(e.to_string(), "Mod already registered: mod_456");
+
+        let e = InstallLogError::EntryNotFound("Data/test.dds".into());
+        assert_eq!(e.to_string(), "Entry not found: Data/test.dds");
+
+        let e = InstallLogError::NoActiveTransaction;
+        assert_eq!(e.to_string(), "No active transaction");
+
+        let e = InstallLogError::TransactionAlreadyActive;
+        assert_eq!(e.to_string(), "Transaction already active");
+    }
+
+    #[test]
+    fn test_install_log_error_from_io() {
+        let io_err = std::io::Error::new(std::io::ErrorKind::NotFound, "database missing");
+        let log_err = InstallLogError::from(io_err);
+        assert!(log_err.to_string().contains("IO error"));
+        assert!(log_err.to_string().contains("database missing"));
     }
 }

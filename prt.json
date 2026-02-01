@@ -215,16 +215,16 @@
       "details": "Define InstallLog trait API (mods, file ownership, ini edits, backup/transactions) in nmm-core.",
       "id": "F-005",
       "notes": "",
-      "passes-tests": false,
+      "passes-tests": true,
       "priority": "medium",
-      "status": "not-started",
+      "status": "completed",
       "tags": [
         "phase1",
         "month2"
       ],
       "title": "nmm-core: InstallLog trait",
       "type": "feature",
-      "updatedAt": "2026-01-30T03:57:28.250Z"
+      "updatedAt": "2026-02-01T05:51:22.239Z"
     },
     {
       "blocks": [],
