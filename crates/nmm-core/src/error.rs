@@ -35,6 +35,26 @@ pub enum ModFormatError {
     Io(#[from] std::io::Error),
 }
 
+/// Errors that can occur when working with game plugins.
+#[derive(Debug, Error)]
+pub enum PluginError {
+    /// The plugin file is invalid or cannot be parsed.
+    #[error("Invalid plugin: {0}")]
+    Invalid(String),
+
+    /// The plugin file was not found.
+    #[error("Plugin not found: {0}")]
+    NotFound(PathBuf),
+
+    /// A required master plugin is missing.
+    #[error("Missing master: {0}")]
+    MissingMaster(String),
+
+    /// An I/O error occurred.
+    #[error("IO error: {0}")]
+    Io(#[from] std::io::Error),
+}
+
 /// Errors that can occur when working with game modes.
 #[derive(Debug, Error)]
 pub enum GameModeError {
@@ -49,4 +69,55 @@ pub enum GameModeError {
     /// An I/O error occurred.
     #[error("IO error: {0}")]
     Io(#[from] std::io::Error),
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_plugin_error_display() {
+        let e = PluginError::Invalid("bad header".into());
+        assert_eq!(e.to_string(), "Invalid plugin: bad header");
+
+        let e = PluginError::NotFound(PathBuf::from("Data/mods/missing.esp"));
+        assert_eq!(e.to_string(), "Plugin not found: Data/mods/missing.esp");
+
+        let e = PluginError::MissingMaster("Skyrim.esm".into());
+        assert_eq!(e.to_string(), "Missing master: Skyrim.esm");
+    }
+
+    #[test]
+    fn test_plugin_error_from_io() {
+        let io_err = std::io::Error::new(std::io::ErrorKind::NotFound, "file missing");
+        let plugin_err = PluginError::from(io_err);
+        assert!(plugin_err.to_string().contains("IO error"));
+    }
+
+    #[test]
+    fn test_mod_error_display() {
+        let e = ModError::FileNotFound("textures/test.dds".into());
+        assert_eq!(e.to_string(), "File not found in mod: textures/test.dds");
+
+        let e = ModError::ArchiveError("truncated".into());
+        assert_eq!(e.to_string(), "Failed to read archive: truncated");
+    }
+
+    #[test]
+    fn test_mod_format_error_display() {
+        let e = ModFormatError::UnsupportedFormat;
+        assert_eq!(e.to_string(), "Unsupported format");
+
+        let e = ModFormatError::CorruptArchive("bad magic".into());
+        assert_eq!(e.to_string(), "Corrupt archive: bad magic");
+    }
+
+    #[test]
+    fn test_game_mode_error_display() {
+        let e = GameModeError::GameNotFound(PathBuf::from("/opt/games/Skyrim"));
+        assert_eq!(e.to_string(), "Game not found at path: /opt/games/Skyrim");
+
+        let e = GameModeError::UnsupportedVersion("0.9".into());
+        assert_eq!(e.to_string(), "Unsupported game version: 0.9");
+    }
 }

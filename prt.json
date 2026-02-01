@@ -152,16 +152,16 @@
       "details": "Create library error enums using thiserror; wire through core traits as needed.",
       "id": "F-004",
       "notes": "",
-      "passes-tests": false,
+      "passes-tests": true,
       "priority": "medium",
-      "status": "not-started",
+      "status": "completed",
       "tags": [
         "phase1",
         "month1"
       ],
       "title": "nmm-core: error types (thiserror)",
       "type": "feature",
-      "updatedAt": "2026-01-30T03:56:59.899Z"
+      "updatedAt": "2026-02-01T05:05:33.890Z"
     },
     {
       "blocks": [],

@@ -44,6 +44,6 @@ pub use mod_info::*;
 pub mod prelude {
     pub use crate::{
         FormatConfidence, GameMode, GameModeDescriptor, GameTheme, Mod, ModError, ModFormat,
-        ModFormatError, ModInfo, ScriptType,
+        ModFormatError, ModInfo, PluginError, ScriptType,
     };
 }

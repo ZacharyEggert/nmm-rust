@@ -105,7 +105,7 @@ pub trait GameModeDescriptor: Send + Sync {
 /// Plugin factory trait for games that use plugins.
 pub trait PluginFactory: Send + Sync {
     /// Create a plugin from a file path.
-    fn create_plugin(&self, path: &Path) -> Result<Plugin, crate::error::ModError>;
+    fn create_plugin(&self, path: &Path) -> Result<Plugin, crate::error::PluginError>;
 
     /// Check if a file is a valid plugin.
     fn is_plugin(&self, path: &Path) -> bool;
@@ -123,16 +123,16 @@ pub trait PluginOrderValidator: Send + Sync {
 /// Load order manager.
 pub trait LoadOrderManager: Send + Sync {
     /// Get the current load order.
-    fn get_load_order(&self) -> Result<Vec<Plugin>, crate::error::ModError>;
+    fn get_load_order(&self) -> Result<Vec<Plugin>, crate::error::PluginError>;
 
     /// Set the load order.
-    fn set_load_order(&mut self, plugins: &[Plugin]) -> Result<(), crate::error::ModError>;
+    fn set_load_order(&mut self, plugins: &[Plugin]) -> Result<(), crate::error::PluginError>;
 
     /// Activate a plugin.
-    fn activate(&mut self, plugin: &Plugin) -> Result<(), crate::error::ModError>;
+    fn activate(&mut self, plugin: &Plugin) -> Result<(), crate::error::PluginError>;
 
     /// Deactivate a plugin.
-    fn deactivate(&mut self, plugin: &Plugin) -> Result<(), crate::error::ModError>;
+    fn deactivate(&mut self, plugin: &Plugin) -> Result<(), crate::error::PluginError>;
 
     /// Get currently active plugins.
     fn active_plugins(&self) -> Vec<&Plugin>;
