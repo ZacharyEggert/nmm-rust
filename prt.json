@@ -112,16 +112,16 @@
       "details": "Define core game mode traits in nmm-core (descriptor + runtime).",
       "id": "F-002",
       "notes": "",
-      "passes-tests": false,
+      "passes-tests": true,
       "priority": "medium",
-      "status": "not-started",
+      "status": "completed",
       "tags": [
         "phase1",
         "month1"
       ],
       "title": "nmm-core: GameModeDescriptor + GameMode traits",
       "type": "feature",
-      "updatedAt": "2026-01-30T03:56:58.413Z"
+      "updatedAt": "2026-02-01T04:56:29.652Z"
     },
     {
       "blocks": [],
