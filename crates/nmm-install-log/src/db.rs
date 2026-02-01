@@ -145,6 +145,9 @@ impl InstallLog for SqliteInstallLog {
     }
 
     fn replace_mod(&mut self, mod_key: &str, info: &ModInfo) -> Result<(), InstallLogError> {
+        if mod_key == ORIGINAL_VALUES_KEY {
+            return Err(InstallLogError::ModNotFound(mod_key.to_owned()));
+        }
         if !self.mod_exists(mod_key)? {
             return Err(InstallLogError::ModNotFound(mod_key.to_owned()));
         }
@@ -166,6 +169,9 @@ impl InstallLog for SqliteInstallLog {
     }
 
     fn remove_mod(&mut self, mod_key: &str) -> Result<(), InstallLogError> {
+        if mod_key == ORIGINAL_VALUES_KEY {
+            return Err(InstallLogError::ModNotFound(mod_key.to_owned()));
+        }
         if !self.mod_exists(mod_key)? {
             return Err(InstallLogError::ModNotFound(mod_key.to_owned()));
         }
@@ -210,12 +216,12 @@ impl InstallLog for SqliteInstallLog {
     fn active_mods(&self) -> Vec<ModInfo> {
         let conn = self.conn.lock().unwrap();
         let mut stmt = match conn.prepare(
-            "SELECT archive_path, name, version, machine_version, install_date FROM mods",
+            "SELECT archive_path, name, version, machine_version, install_date FROM mods WHERE mod_key != ?1",
         ) {
             Ok(s) => s,
             Err(_) => return vec![],
         };
-        let rows = stmt.query_map([], |row| {
+        let rows = stmt.query_map([ORIGINAL_VALUES_KEY], |row| {
             let file_name: String = row.get(0)?;
             let name: String = row.get(1)?;
             let version: String = row.get(2)?;
@@ -243,36 +249,93 @@ impl InstallLog for SqliteInstallLog {
 
     // --- File ownership (F-008) ----------------------------------------------
 
-    fn add_data_file(&mut self, _mod_key: &str, _file_path: &str) -> Result<(), InstallLogError> {
-        todo!("F-008: add_data_file — require_mod + next_install_order + INSERT file_owners")
+    fn add_data_file(&mut self, mod_key: &str, file_path: &str) -> Result<(), InstallLogError> {
+        self.require_mod(mod_key)?;
+        let order = self.next_install_order()?;
+        let conn = self.conn.lock().unwrap();
+        conn.execute(
+            "INSERT INTO file_owners (file_path, mod_key, install_order) VALUES (?1, ?2, ?3)",
+            rusqlite::params![file_path, mod_key, order],
+        )
+        .map_err(Self::db_err)?;
+        Ok(())
     }
 
-    fn remove_data_file(
-        &mut self,
-        _mod_key: &str,
-        _file_path: &str,
-    ) -> Result<(), InstallLogError> {
-        todo!("F-008: remove_data_file — require_mod + DELETE from file_owners")
+    fn remove_data_file(&mut self, mod_key: &str, file_path: &str) -> Result<(), InstallLogError> {
+        self.require_mod(mod_key)?;
+        let conn = self.conn.lock().unwrap();
+        let deleted = conn
+            .execute(
+                "DELETE FROM file_owners WHERE file_path = ?1 AND mod_key = ?2",
+                rusqlite::params![file_path, mod_key],
+            )
+            .map_err(Self::db_err)?;
+        if deleted == 0 {
+            return Err(InstallLogError::EntryNotFound(file_path.to_owned()));
+        }
+        Ok(())
     }
 
-    fn get_current_file_owner(&self, _file_path: &str) -> Option<String> {
-        todo!("F-008: get_current_file_owner — SELECT mod_key ORDER BY install_order DESC LIMIT 1")
+    fn get_current_file_owner(&self, file_path: &str) -> Option<String> {
+        let conn = self.conn.lock().unwrap();
+        conn.query_row(
+            "SELECT mod_key FROM file_owners WHERE file_path = ?1 ORDER BY install_order DESC LIMIT 1",
+            [file_path],
+            |row| row.get(0),
+        )
+        .optional()
+        .ok()
+        .flatten()
     }
 
-    fn get_previous_file_owner(&self, _file_path: &str) -> Option<String> {
-        todo!("F-008: get_previous_file_owner — ... LIMIT 1 OFFSET 1")
+    fn get_previous_file_owner(&self, file_path: &str) -> Option<String> {
+        let conn = self.conn.lock().unwrap();
+        conn.query_row(
+            "SELECT mod_key FROM file_owners WHERE file_path = ?1 ORDER BY install_order DESC LIMIT 1 OFFSET 1",
+            [file_path],
+            |row| row.get(0),
+        )
+        .optional()
+        .ok()
+        .flatten()
     }
 
-    fn log_original_data_file(&mut self, _file_path: &str) -> Result<(), InstallLogError> {
-        todo!("F-008: log_original_data_file — INSERT with ORIGINAL_VALUES_KEY (note: FK constraint)")
+    fn log_original_data_file(&mut self, file_path: &str) -> Result<(), InstallLogError> {
+        let order = self.next_install_order()?;
+        let conn = self.conn.lock().unwrap();
+        conn.execute(
+            "INSERT INTO file_owners (file_path, mod_key, install_order) VALUES (?1, ?2, ?3)",
+            rusqlite::params![file_path, ORIGINAL_VALUES_KEY, order],
+        )
+        .map_err(Self::db_err)?;
+        Ok(())
     }
 
-    fn get_installed_mod_files(&self, _mod_key: &str) -> Result<Vec<String>, InstallLogError> {
-        todo!("F-008: get_installed_mod_files — require_mod + SELECT file_path WHERE mod_key")
+    fn get_installed_mod_files(&self, mod_key: &str) -> Result<Vec<String>, InstallLogError> {
+        self.require_mod(mod_key)?;
+        let conn = self.conn.lock().unwrap();
+        let mut stmt = conn
+            .prepare("SELECT file_path FROM file_owners WHERE mod_key = ?1")
+            .map_err(Self::db_err)?;
+        let rows = stmt
+            .query_map([mod_key], |row| row.get(0))
+            .map_err(Self::db_err)?;
+        rows.collect::<Result<Vec<String>, _>>()
+            .map_err(Self::db_err)
     }
 
-    fn get_file_installers(&self, _file_path: &str) -> Vec<String> {
-        todo!("F-008: get_file_installers — SELECT mod_key ORDER BY install_order ASC")
+    fn get_file_installers(&self, file_path: &str) -> Vec<String> {
+        let conn = self.conn.lock().unwrap();
+        let mut stmt = match conn.prepare(
+            "SELECT mod_key FROM file_owners WHERE file_path = ?1 ORDER BY install_order ASC",
+        ) {
+            Ok(s) => s,
+            Err(_) => return vec![],
+        };
+        let result: Result<Vec<String>, _> = stmt
+            .query_map([file_path], |row| row.get(0))
+            .and_then(|rows| rows.collect());
+        result.unwrap_or_else(|_| vec![])
     }
 
     // --- INI edits (F-009) ---------------------------------------------------
@@ -295,11 +358,7 @@ impl InstallLog for SqliteInstallLog {
         todo!("F-009: replace_ini_edit — UPDATE ini_edits value")
     }
 
-    fn remove_ini_edit(
-        &mut self,
-        _mod_key: &str,
-        _edit: &IniEdit,
-    ) -> Result<(), InstallLogError> {
+    fn remove_ini_edit(&mut self, _mod_key: &str, _edit: &IniEdit) -> Result<(), InstallLogError> {
         todo!("F-009: remove_ini_edit — DELETE from ini_edits")
     }
 
@@ -318,7 +377,9 @@ impl InstallLog for SqliteInstallLog {
         _edit: &IniEdit,
         _value: &str,
     ) -> Result<(), InstallLogError> {
-        todo!("F-009: log_original_ini_value — INSERT with ORIGINAL_VALUES_KEY (note: FK constraint)")
+        todo!(
+            "F-009: log_original_ini_value — INSERT with ORIGINAL_VALUES_KEY (note: FK constraint)"
+        )
     }
 
     fn get_installed_ini_edits(&self, _mod_key: &str) -> Result<Vec<IniEdit>, InstallLogError> {
@@ -366,7 +427,9 @@ impl InstallLog for SqliteInstallLog {
         _gsv_key: &str,
         _value: &[u8],
     ) -> Result<(), InstallLogError> {
-        todo!("F-009: log_original_gsv_value — INSERT with ORIGINAL_VALUES_KEY (note: FK constraint)")
+        todo!(
+            "F-009: log_original_gsv_value — INSERT with ORIGINAL_VALUES_KEY (note: FK constraint)"
+        )
     }
 
     fn get_installed_gsv_edits(&self, _mod_key: &str) -> Result<Vec<String>, InstallLogError> {
@@ -527,7 +590,11 @@ mod tests {
             name: "Test Mod".into(),
             version: "1.2.3".into(),
             machine_version: Some(semver::Version::parse("1.2.3").unwrap()),
-            install_date: Some(DateTime::parse_from_rfc3339("2024-06-15T10:30:00Z").unwrap().with_timezone(&Utc)),
+            install_date: Some(
+                DateTime::parse_from_rfc3339("2024-06-15T10:30:00Z")
+                    .unwrap()
+                    .with_timezone(&Utc),
+            ),
             ..Default::default()
         };
         log.add_mod("mod_001", &info).unwrap();
@@ -601,7 +668,11 @@ mod tests {
             name: "New Name".into(),
             version: "2.0.0".into(),
             machine_version: Some(semver::Version::parse("2.0.0").unwrap()),
-            install_date: Some(DateTime::parse_from_rfc3339("2025-01-01T00:00:00Z").unwrap().with_timezone(&Utc)),
+            install_date: Some(
+                DateTime::parse_from_rfc3339("2025-01-01T00:00:00Z")
+                    .unwrap()
+                    .with_timezone(&Utc),
+            ),
             ..Default::default()
         };
         log.replace_mod("rep_mod", &new_info).unwrap();
@@ -637,7 +708,10 @@ mod tests {
         let info = ModInfo::new("OV", "ov.7z");
         match log.replace_mod(ORIGINAL_VALUES_KEY, &info) {
             Err(InstallLogError::ModNotFound(key)) => assert_eq!(key, ORIGINAL_VALUES_KEY),
-            other => panic!("expected ModNotFound for ORIGINAL_VALUES_KEY, got {:?}", other),
+            other => panic!(
+                "expected ModNotFound for ORIGINAL_VALUES_KEY, got {:?}",
+                other
+            ),
         }
     }
 
@@ -646,10 +720,14 @@ mod tests {
     #[test]
     fn remove_mod_deletes_row() {
         let mut log = fresh_log();
-        log.conn.lock().unwrap().execute(
-            "INSERT INTO mods (mod_key, archive_path, name) VALUES ('del_mod', 'd.7z', 'Del')",
-            [],
-        ).unwrap();
+        log.conn
+            .lock()
+            .unwrap()
+            .execute(
+                "INSERT INTO mods (mod_key, archive_path, name) VALUES ('del_mod', 'd.7z', 'Del')",
+                [],
+            )
+            .unwrap();
         assert!(log.mod_exists("del_mod").unwrap());
         log.remove_mod("del_mod").unwrap();
         assert!(!log.mod_exists("del_mod").unwrap());
@@ -669,7 +747,10 @@ mod tests {
         let mut log = fresh_log();
         match log.remove_mod(ORIGINAL_VALUES_KEY) {
             Err(InstallLogError::ModNotFound(key)) => assert_eq!(key, ORIGINAL_VALUES_KEY),
-            other => panic!("expected ModNotFound for ORIGINAL_VALUES_KEY, got {:?}", other),
+            other => panic!(
+                "expected ModNotFound for ORIGINAL_VALUES_KEY, got {:?}",
+                other
+            ),
         }
     }
 
@@ -717,7 +798,11 @@ mod tests {
             name: "Full Mod".into(),
             version: "3.1.4".into(),
             machine_version: Some(semver::Version::parse("3.1.4").unwrap()),
-            install_date: Some(DateTime::parse_from_rfc3339("2024-12-25T12:00:00Z").unwrap().with_timezone(&Utc)),
+            install_date: Some(
+                DateTime::parse_from_rfc3339("2024-12-25T12:00:00Z")
+                    .unwrap()
+                    .with_timezone(&Utc),
+            ),
             ..Default::default()
         };
         log.add_mod("full_mod", &info).unwrap();
@@ -726,9 +811,15 @@ mod tests {
         assert_eq!(got.file_name, "Full.7z");
         assert_eq!(got.name, "Full Mod");
         assert_eq!(got.version, "3.1.4");
-        assert_eq!(got.machine_version, Some(semver::Version::parse("3.1.4").unwrap()));
+        assert_eq!(
+            got.machine_version,
+            Some(semver::Version::parse("3.1.4").unwrap())
+        );
         assert!(got.install_date.is_some());
-        assert_eq!(got.install_date.unwrap().format("%Y-%m-%d").to_string(), "2024-12-25");
+        assert_eq!(
+            got.install_date.unwrap().format("%Y-%m-%d").to_string(),
+            "2024-12-25"
+        );
     }
 
     #[test]
@@ -803,7 +894,11 @@ mod tests {
             name: "Roundtrip".into(),
             version: "2.5.1".into(),
             machine_version: Some(semver::Version::parse("2.5.1").unwrap()),
-            install_date: Some(DateTime::parse_from_rfc3339("2024-03-10T08:00:00Z").unwrap().with_timezone(&Utc)),
+            install_date: Some(
+                DateTime::parse_from_rfc3339("2024-03-10T08:00:00Z")
+                    .unwrap()
+                    .with_timezone(&Utc),
+            ),
             ..Default::default()
         };
         log.add_mod("rt_mod", &info).unwrap();
@@ -816,5 +911,246 @@ mod tests {
         assert_eq!(from_active.version, from_get.version);
         assert_eq!(from_active.machine_version, from_get.machine_version);
         assert_eq!(from_active.install_date, from_get.install_date);
+    }
+
+    // --- add_data_file -------------------------------------------------------
+
+    #[test]
+    fn add_data_file_inserts_row() {
+        let mut log = fresh_log();
+        log.conn.lock().unwrap().execute(
+            "INSERT INTO mods (mod_key, archive_path, name) VALUES ('test_mod', 'test.7z', 'Test')",
+            [],
+        ).unwrap();
+        log.add_data_file("test_mod", "Data/test.dds").unwrap();
+
+        let conn = log.conn.lock().unwrap();
+        let (path, key, order): (String, String, i64) = conn
+            .query_row(
+                "SELECT file_path, mod_key, install_order FROM file_owners WHERE mod_key = 'test_mod'",
+                [],
+                |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?)),
+            )
+            .unwrap();
+        assert_eq!(path, "Data/test.dds");
+        assert_eq!(key, "test_mod");
+        assert!(order > 0);
+    }
+
+    #[test]
+    fn add_data_file_rejects_unknown_mod() {
+        let mut log = fresh_log();
+        match log.add_data_file("unknown_mod", "Data/test.dds") {
+            Err(InstallLogError::ModNotFound(key)) => assert_eq!(key, "unknown_mod"),
+            other => panic!("expected ModNotFound, got {:?}", other),
+        }
+    }
+
+    #[test]
+    fn add_data_file_assigns_monotonic_install_order() {
+        let mut log = fresh_log();
+        log.conn.lock().unwrap().execute(
+            "INSERT INTO mods (mod_key, archive_path, name) VALUES ('mono_mod', 'm.7z', 'Mono')",
+            [],
+        ).unwrap();
+        log.add_data_file("mono_mod", "Data/file1.dds").unwrap();
+        log.add_data_file("mono_mod", "Data/file2.dds").unwrap();
+
+        let conn = log.conn.lock().unwrap();
+        let mut stmt = conn.prepare("SELECT install_order FROM file_owners WHERE mod_key = 'mono_mod' ORDER BY install_order").unwrap();
+        let orders: Vec<i64> = stmt
+            .query_map([], |row| row.get(0))
+            .unwrap()
+            .collect::<Result<Vec<_>, _>>()
+            .unwrap();
+        assert_eq!(orders.len(), 2);
+        assert!(
+            orders[1] > orders[0],
+            "install_order must be monotonically increasing"
+        );
+    }
+
+    // --- remove_data_file ----------------------------------------------------
+
+    #[test]
+    fn remove_data_file_deletes_row() {
+        let mut log = fresh_log();
+        log.conn.lock().unwrap().execute_batch(
+            "INSERT INTO mods (mod_key, archive_path, name) VALUES ('del_file_mod', 'd.7z', 'Del');
+             INSERT INTO file_owners (file_path, mod_key, install_order) VALUES ('Data/removeme.dds', 'del_file_mod', 1);"
+        ).unwrap();
+
+        log.remove_data_file("del_file_mod", "Data/removeme.dds")
+            .unwrap();
+
+        let conn = log.conn.lock().unwrap();
+        let count: i64 = conn
+            .query_row(
+                "SELECT COUNT(*) FROM file_owners WHERE file_path = 'Data/removeme.dds'",
+                [],
+                |row| row.get(0),
+            )
+            .unwrap();
+        assert_eq!(count, 0);
+    }
+
+    #[test]
+    fn remove_data_file_rejects_unknown_mod() {
+        let mut log = fresh_log();
+        match log.remove_data_file("ghost_mod", "Data/file.dds") {
+            Err(InstallLogError::ModNotFound(key)) => assert_eq!(key, "ghost_mod"),
+            other => panic!("expected ModNotFound, got {:?}", other),
+        }
+    }
+
+    #[test]
+    fn remove_data_file_rejects_missing_entry() {
+        let mut log = fresh_log();
+        log.conn.lock().unwrap().execute(
+            "INSERT INTO mods (mod_key, archive_path, name) VALUES ('exists_mod', 'e.7z', 'Exists')",
+            [],
+        ).unwrap();
+        match log.remove_data_file("exists_mod", "Data/missing.dds") {
+            Err(InstallLogError::EntryNotFound(path)) => assert_eq!(path, "Data/missing.dds"),
+            other => panic!("expected EntryNotFound, got {:?}", other),
+        }
+    }
+
+    // --- get_current_file_owner ----------------------------------------------
+
+    #[test]
+    fn get_current_file_owner_none_when_empty() {
+        let log = fresh_log();
+        assert!(log.get_current_file_owner("Data/none.dds").is_none());
+    }
+
+    #[test]
+    fn get_current_file_owner_returns_latest() {
+        let log = fresh_log();
+        log.conn.lock().unwrap().execute_batch(
+            "INSERT INTO mods (mod_key, archive_path, name) VALUES ('mod_a', 'a.7z', 'A');
+             INSERT INTO mods (mod_key, archive_path, name) VALUES ('mod_b', 'b.7z', 'B');
+             INSERT INTO file_owners (file_path, mod_key, install_order) VALUES ('Data/shared.dds', 'mod_a', 1);
+             INSERT INTO file_owners (file_path, mod_key, install_order) VALUES ('Data/shared.dds', 'mod_b', 2);"
+        ).unwrap();
+
+        let owner = log.get_current_file_owner("Data/shared.dds");
+        assert_eq!(owner, Some("mod_b".to_string()));
+    }
+
+    // --- get_previous_file_owner ---------------------------------------------
+
+    #[test]
+    fn get_previous_file_owner_none_with_single_owner() {
+        let log = fresh_log();
+        log.conn.lock().unwrap().execute_batch(
+            "INSERT INTO mods (mod_key, archive_path, name) VALUES ('solo_mod', 's.7z', 'Solo');
+             INSERT INTO file_owners (file_path, mod_key, install_order) VALUES ('Data/solo.dds', 'solo_mod', 1);"
+        ).unwrap();
+
+        assert!(log.get_previous_file_owner("Data/solo.dds").is_none());
+    }
+
+    #[test]
+    fn get_previous_file_owner_returns_second() {
+        let log = fresh_log();
+        log.conn.lock().unwrap().execute_batch(
+            "INSERT INTO mods (mod_key, archive_path, name) VALUES ('mod_x', 'x.7z', 'X');
+             INSERT INTO mods (mod_key, archive_path, name) VALUES ('mod_y', 'y.7z', 'Y');
+             INSERT INTO file_owners (file_path, mod_key, install_order) VALUES ('Data/prev.dds', 'mod_x', 1);
+             INSERT INTO file_owners (file_path, mod_key, install_order) VALUES ('Data/prev.dds', 'mod_y', 2);"
+        ).unwrap();
+
+        let prev = log.get_previous_file_owner("Data/prev.dds");
+        assert_eq!(prev, Some("mod_x".to_string()));
+    }
+
+    // --- log_original_data_file ----------------------------------------------
+
+    #[test]
+    fn log_original_data_file_inserts_sentinel() {
+        let mut log = fresh_log();
+        log.log_original_data_file("Data/original.dds").unwrap();
+
+        let conn = log.conn.lock().unwrap();
+        let (path, key): (String, String) = conn
+            .query_row(
+                "SELECT file_path, mod_key FROM file_owners WHERE file_path = 'Data/original.dds'",
+                [],
+                |row| Ok((row.get(0)?, row.get(1)?)),
+            )
+            .unwrap();
+        assert_eq!(path, "Data/original.dds");
+        assert_eq!(key, ORIGINAL_VALUES_KEY);
+    }
+
+    // --- get_installed_mod_files ---------------------------------------------
+
+    #[test]
+    fn get_installed_mod_files_returns_all() {
+        let log = fresh_log();
+        log.conn.lock().unwrap().execute_batch(
+            "INSERT INTO mods (mod_key, archive_path, name) VALUES ('files_mod', 'f.7z', 'Files');
+             INSERT INTO file_owners (file_path, mod_key, install_order) VALUES ('Data/file1.dds', 'files_mod', 1);
+             INSERT INTO file_owners (file_path, mod_key, install_order) VALUES ('Data/file2.dds', 'files_mod', 2);"
+        ).unwrap();
+
+        let files = log.get_installed_mod_files("files_mod").unwrap();
+        assert_eq!(files.len(), 2);
+        assert!(files.contains(&"Data/file1.dds".to_string()));
+        assert!(files.contains(&"Data/file2.dds".to_string()));
+    }
+
+    #[test]
+    fn get_installed_mod_files_rejects_unknown_mod() {
+        let log = fresh_log();
+        match log.get_installed_mod_files("unknown") {
+            Err(InstallLogError::ModNotFound(key)) => assert_eq!(key, "unknown"),
+            other => panic!("expected ModNotFound, got {:?}", other),
+        }
+    }
+
+    #[test]
+    fn get_installed_mod_files_works_for_original_values_key() {
+        let mut log = fresh_log();
+        log.log_original_data_file("Data/orig.dds").unwrap();
+
+        let files = log.get_installed_mod_files(ORIGINAL_VALUES_KEY).unwrap();
+        assert_eq!(files.len(), 1);
+        assert_eq!(files[0], "Data/orig.dds");
+    }
+
+    // --- get_file_installers -------------------------------------------------
+
+    #[test]
+    fn get_file_installers_empty_for_unknown_file() {
+        let log = fresh_log();
+        let installers = log.get_file_installers("Data/unknown.dds");
+        assert!(installers.is_empty());
+    }
+
+    #[test]
+    fn get_file_installers_returns_asc_order() {
+        let log = fresh_log();
+        log.conn.lock().unwrap().execute_batch(
+            "INSERT INTO mods (mod_key, archive_path, name) VALUES ('first_mod', '1.7z', 'First');
+             INSERT INTO mods (mod_key, archive_path, name) VALUES ('second_mod', '2.7z', 'Second');
+             INSERT INTO file_owners (file_path, mod_key, install_order) VALUES ('Data/multi.dds', 'first_mod', 1);
+             INSERT INTO file_owners (file_path, mod_key, install_order) VALUES ('Data/multi.dds', 'second_mod', 2);"
+        ).unwrap();
+
+        let installers = log.get_file_installers("Data/multi.dds");
+        assert_eq!(installers.len(), 2);
+        assert_eq!(installers[0], "first_mod");
+        assert_eq!(installers[1], "second_mod");
+    }
+
+    // --- active_mods excludes sentinel ---------------------------------------
+
+    #[test]
+    fn active_mods_excludes_original_values_sentinel() {
+        let log = fresh_log();
+        // Sentinel is seeded by schema, so active_mods should be empty
+        assert!(log.active_mods().is_empty());
     }
 }

@@ -124,3 +124,100 @@ fn add_remove_get_roundtrip() {
     log.remove_mod("remove_me").unwrap();
     assert!(log.get_mod("remove_me").is_none());
 }
+
+// --- F-008 integration tests ------------------------------------------------
+
+#[test]
+fn file_ownership_full_stack() {
+    use nmm_core::ORIGINAL_VALUES_KEY;
+
+    let mut log = SqliteInstallLog::open_in_memory().unwrap();
+
+    // Register two mods
+    log.add_mod("mod_a", &ModInfo::new("Mod A", "a.7z"))
+        .unwrap();
+    log.add_mod("mod_b", &ModInfo::new("Mod B", "b.7z"))
+        .unwrap();
+
+    let path = "Data/shared_texture.dds";
+
+    // Log original value
+    log.log_original_data_file(path).unwrap();
+
+    // mod_a installs the file
+    log.add_data_file("mod_a", path).unwrap();
+
+    // mod_b overwrites it
+    log.add_data_file("mod_b", path).unwrap();
+
+    // Current owner should be mod_b
+    assert_eq!(log.get_current_file_owner(path), Some("mod_b".to_string()));
+
+    // Previous owner should be mod_a
+    assert_eq!(log.get_previous_file_owner(path), Some("mod_a".to_string()));
+
+    // Installers should be in chronological order
+    let installers = log.get_file_installers(path);
+    assert_eq!(installers.len(), 3);
+    assert_eq!(installers[0], ORIGINAL_VALUES_KEY);
+    assert_eq!(installers[1], "mod_a");
+    assert_eq!(installers[2], "mod_b");
+
+    // Both mods should report owning the file
+    let mod_a_files = log.get_installed_mod_files("mod_a").unwrap();
+    assert!(mod_a_files.contains(&path.to_string()));
+
+    let mod_b_files = log.get_installed_mod_files("mod_b").unwrap();
+    assert!(mod_b_files.contains(&path.to_string()));
+}
+
+#[test]
+fn remove_top_of_stack_reverts_to_previous() {
+    let mut log = SqliteInstallLog::open_in_memory().unwrap();
+
+    log.add_mod("mod_a", &ModInfo::new("Mod A", "a.7z"))
+        .unwrap();
+    log.add_mod("mod_b", &ModInfo::new("Mod B", "b.7z"))
+        .unwrap();
+
+    let path = "Data/contested.esp";
+
+    log.add_data_file("mod_a", path).unwrap();
+    log.add_data_file("mod_b", path).unwrap();
+
+    // mod_b is the current owner
+    assert_eq!(log.get_current_file_owner(path), Some("mod_b".to_string()));
+
+    // Remove mod_b's ownership
+    log.remove_data_file("mod_b", path).unwrap();
+
+    // mod_a should now be the current owner
+    assert_eq!(log.get_current_file_owner(path), Some("mod_a".to_string()));
+
+    // No previous owner now
+    assert_eq!(log.get_previous_file_owner(path), None);
+}
+
+#[test]
+fn remove_mod_clears_file_ownership() {
+    let mut log = SqliteInstallLog::open_in_memory().unwrap();
+
+    log.add_mod("temp_mod", &ModInfo::new("Temp Mod", "temp.7z"))
+        .unwrap();
+
+    let path = "Data/temp_file.nif";
+
+    log.add_data_file("temp_mod", path).unwrap();
+
+    // Verify ownership
+    assert_eq!(
+        log.get_current_file_owner(path),
+        Some("temp_mod".to_string())
+    );
+
+    // Remove the mod (CASCADE should delete the file_owners row)
+    log.remove_mod("temp_mod").unwrap();
+
+    // No owner now
+    assert_eq!(log.get_current_file_owner(path), None);
+}

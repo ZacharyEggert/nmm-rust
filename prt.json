@@ -278,16 +278,16 @@
       "details": "Implement file_owners stack/ordering semantics (current owner / previous owner / installers list).",
       "id": "F-008",
       "notes": "",
-      "passes-tests": false,
+      "passes-tests": true,
       "priority": "medium",
-      "status": "not-started",
+      "status": "completed",
       "tags": [
         "phase1",
         "month2"
       ],
       "title": "nmm-install-log: file ownership tracking",
       "type": "feature",
-      "updatedAt": "2026-01-30T03:57:30.499Z"
+      "updatedAt": "2026-02-01T19:46:16.286Z"
     },
     {
       "blocks": [],

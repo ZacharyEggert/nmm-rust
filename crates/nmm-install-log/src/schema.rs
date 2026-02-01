@@ -71,6 +71,8 @@ CREATE INDEX IF NOT EXISTS idx_gsv_edits_by_mod
 const SEED_V1: &str = r#"
 INSERT OR IGNORE INTO schema_meta (key, int_value) VALUES ('schema_version', 1);
 INSERT OR IGNORE INTO schema_meta (key, int_value) VALUES ('install_order_seq', 0);
+INSERT OR IGNORE INTO mods (mod_key, archive_path, name)
+    VALUES ('<<ORIGINAL_VALUES>>', '', '<<ORIGINAL_VALUES>>');
 "#;
 
 use crate::error::InstallLogError;
