@@ -132,16 +132,16 @@
       "details": "Define ModFormat trait + FormatConfidence enum to model archive formats.",
       "id": "F-003",
       "notes": "",
-      "passes-tests": false,
+      "passes-tests": true,
       "priority": "medium",
-      "status": "not-started",
+      "status": "completed",
       "tags": [
         "phase1",
         "month1"
       ],
       "title": "nmm-core: ModFormat trait + FormatConfidence",
       "type": "feature",
-      "updatedAt": "2026-01-30T03:56:59.155Z"
+      "updatedAt": "2026-02-01T05:03:16.781Z"
     },
     {
       "blocks": [],
