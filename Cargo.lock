@@ -503,7 +503,9 @@ dependencies = [
 name = "nmm-install-log"
 version = "0.1.0"
 dependencies = [
+ "nmm-core",
  "rusqlite",
+ "tempfile",
  "thiserror",
 ]
 

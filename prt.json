@@ -237,16 +237,16 @@
       "details": "Create nmm-install-log crate with rusqlite connection management and basic persistence.",
       "id": "F-006",
       "notes": "",
-      "passes-tests": false,
+      "passes-tests": true,
       "priority": "medium",
-      "status": "not-started",
+      "status": "completed",
       "tags": [
         "phase1",
         "month2"
       ],
       "title": "nmm-install-log: crate skeleton + rusqlite",
       "type": "feature",
-      "updatedAt": "2026-01-30T03:57:29.040Z"
+      "updatedAt": "2026-02-01T19:19:37.866Z"
     },
     {
       "blocks": [],

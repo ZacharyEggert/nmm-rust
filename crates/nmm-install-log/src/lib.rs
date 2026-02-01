@@ -16,5 +16,8 @@
 //!
 //! See [`schema::apply`] for details on schema creation and migration.
 
+pub mod db;
 pub mod error;
 pub mod schema;
+
+pub use db::SqliteInstallLog;
